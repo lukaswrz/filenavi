@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block title %}View {{ owner.name }}{% endblock %}
+{% block head %}
+	{{ super() }}
+	<link href="{{ url_for("static", filename="for/user/profile.css") }}" rel="stylesheet" />
+{% endblock %}
+{% block content %}
+	<dl>
+		<dt>Name</dt>
+		<dd>{{ owner.name }}</dd>
+		<dt>Rank</dt>
+		<dd>{{ owner.rank.format() }}</dd>
+	</dl>
+	{% if user is not none and user.has_access_to(owner) %}
+		<ul class="property-select">
+			<li><a title="Settings" class="widget settings" href="{{ url_for("user.settings", owner=owner) }}">Settings</a></li>
+			<li><a title="Security" class="widget security" href="{{ url_for("user.security", owner=owner) }}">Security</a></li>
+			<li><a title="Delete" class="widget delete" href="{{ url_for("user.delete", owner=owner) }}">Delete</a></li>
+		</ul>
+	{% endif %}
+	{% if user is not none and user.rank >= model.Rank.ADMIN and users is defined and users is not none %}
+		<ul class="listing">
+			{% for u in users %}
+				{% if u != owner %}
+					<li class="entry">
+						<div class="entry-component">
+							<a class="access" href="{{ url_for("user.profile", owner=u) }}" }}>
+								<span class="username">{{ u.name }}</span>
+							</a>
+						</div>
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	{% endif %}
+	{% if user is not none and user.rank >= model.Rank.ADMIN %}
+		<form action="{{ url_for("user.register_trampoline") }}" method="POST">
+			<label for="name">Username</label>
+			<input type="text" id="name" name="name" placeholder="Username" required />
+
+			<label for="password">Password</label>
+			<input type="password" id="password" name="password" placeholder="Password" required />
+
+			<label for="rank">Rank</label>
+			<select id="rank" name="rank" required />
+				{% for r in model.Rank %}
+					{% if r < user.rank %}
+						<option value="{{ r }}">{{ r.format() }}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+
+			<button type="submit" name="user">Create user</button>
+		</form>
+	{% endif %}
+{% endblock %}

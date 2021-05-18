@@ -1,0 +1,115 @@
+a.up {
+	display: block;
+	background: url("/static/icons/left_chevron.svg") no-repeat;
+	background-size: cover;
+	font-size: 0;
+	margin-top: var(--common-margin);
+	margin-bottom: var(--common-margin);
+}
+
+a.up:not([href]) {
+	opacity: var(--opacity-unavailable);
+}
+
+ul.listing li.entry details.attributes > summary {
+	cursor: pointer;
+	list-style: none;
+	margin-left: auto;
+	margin-right: 0;
+	width: var(--widget-square);
+	height: var(--widget-square);
+}
+
+@keyframes sweep {
+	0% {
+		opacity: 0;
+		margin-right: 1vw;
+	}
+	100% {
+		opacity: 1;
+		margin-right: 0;
+	}
+}
+
+ul.listing li.entry details.attributes[open] > *:not(summary) {
+	animation: sweep .5s ease-in-out;
+}
+
+ul.listing li.entry details.attributes dl > * {
+	display: block;
+	overflow: hidden;
+}
+
+ul.listing li.entry details.attributes dl > dt::after {
+	content: ":";
+}
+
+ul.listing li.entry details.attributes dl > dd {
+	float: right;
+}
+
+ul.listing li.entry details.attributes dl > dt {
+	float: left;
+	clear: left;
+}
+
+ul.listing li.entry details.attributes > summary > .widget {
+	font-size: 0;
+	background: url("/static/icons/down_chevron.svg");
+	background-size: cover;
+	transition: all 0.4s ease-in-out;
+	transition-property: opacity, transform;
+}
+
+ul.listing li.entry details.attributes[open] > summary > .widget {
+	transform: rotate(180deg);
+}
+
+ul.listing li.entry a.settings {
+	background: url("/static/icons/gear.svg");
+	background-size: cover;
+	margin-left: var(--common-margin);
+	transition: all 0.4s ease-in-out;
+	transition-property: opacity, transform;
+}
+
+ul.listing li.entry a.settings:hover {
+	transform: rotate(45deg);
+}
+
+ul.listing li.entry button.widget.link {
+	background: url("/static/icons/external.svg") no-repeat;
+	background-size: cover;
+	margin-left: var(--common-margin);
+}
+
+form.upload label.widget {
+	background: url("/static/icons/upload.svg");
+	background-size: cover;
+	margin-top: var(--common-margin);
+	margin-bottom: var(--common-margin);
+}
+
+form.upload input[type=file] {
+	display: none;
+}
+
+form.make-directory {
+	display: flex;
+	flex-direction: row;
+}
+
+form.make-directory button[type=submit] {
+	margin-top: auto;
+	margin-bottom: auto;
+	background: url("/static/icons/plus.svg");
+	background-size: cover;
+}
+
+form.make-directory input[type=text] {
+	flex-grow: 1;
+	margin-left: var(--common-margin);
+	height: var(--widget-square);
+	margin-top: var(--common-margin);
+	margin-bottom: var(--common-margin);
+}

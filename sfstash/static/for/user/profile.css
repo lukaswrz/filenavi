@@ -1,0 +1,63 @@
+ul.property-select {
+	display: flex;
+	flex-direction: row;
+	margin: 0;
+	padding: 0;
+}
+
+ul.property-select li {
+	list-style: none;
+}
+
+a.settings,
+a.security,
+a.delete
+{
+	margin: var(--common-margin);
+}
+
+a.settings {
+	background: url("/static/icons/gear.svg");
+	background-size: cover;
+	transition: all 0.4s ease-in-out;
+	transition-property: opacity, transform;
+}
+
+a.settings:hover {
+	transform: rotate(45deg);
+}
+
+a.security {
+	background: url("/static/icons/book.svg");
+	background-size: cover;
+}
+
+a.delete {
+	background: url("/static/icons/rubbish.svg");
+	background-size: cover;
+}
+
+form input[type=text],
+form input[type=password],
+form select
+{
+	width: 100%;
+}
+
+form button[type=submit]:not(.widget) {
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+dl > dt::after {
+	content: ":";
+}
+
+dt {
+	margin-right: var(--common-margin);
+}
+
+dl > dt {
+	float: left;
+}
