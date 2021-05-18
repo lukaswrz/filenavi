@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block title %}Security settings for {{ owner.name }}{% endblock %}
+{% block head %}
+	{{ super() }}
+	<link href="{{ url_for("static", filename="for/user/password.css") }}" rel="stylesheet" />
+{% endblock %}
+{% block content %}
+	<form class="user" action="{{ url_for("user.security_trampoline", owner=owner) }}" method="POST">
+		{% if user == owner %}
+			<label for="password">Password</label>
+			<input type="password" id="password" name="password" placeholder="Current password" required />
+		{% endif %}
+		<label for="new-password">Password</label>
+		<input type="password" id="new-password" name="new-password" placeholder="New password" required />
+		<label for="re-password">Password</label>
+		<input type="password" id="re-password" name="re-password" placeholder="Retype password" required />
+
+		<button type="submit" name="user">Submit</button>
+	</form>
+{% endblock %}

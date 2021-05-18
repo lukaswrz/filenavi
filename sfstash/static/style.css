@@ -1,0 +1,310 @@
+:root {
+	--dark-primary: #1b1b1b;
+	--dark-secondary: #171717;
+	--dark-tertiary: #090909;
+
+	--light-primary: #e6e6e6;
+
+	--text-color-regular: #e8e8e8;
+	--text-color-highlight: white;
+
+	--text-size-regular: 26px;
+
+	--resize-offset: 5px;
+
+
+	--view-magin-horizontal: 10vw;
+	--view-width: calc(100vw - calc(2 * var(--view-margin-horizontal)));
+
+	--gradient-primary: #ff40b3;
+	--gradient-secondary: #2900ce;
+
+	--common-padding: calc(20px);
+	--common-margin: calc(10px);
+	--common-border: var(--common-border-size) solid var(--light-primary);
+	--common-border-size: 2px;
+	--common-border-invalid: var(--common-border-size) solid #702b2b;
+
+	--background-primary: #141414;
+	--background-secondary: #121212;
+
+	--separator-color: rgba(240, 240, 240, 0.1);
+	--separator-border: 2px solid var(--separator-color);
+
+	--notification-background: rgba(11, 11, 11, 0.8);
+
+	--widget-square: 3rem;
+
+	--opacity-unavailable: 0.4;
+	--opacity-selected: 0.6;
+	--opacity-click: 0.4;
+}
+
+body {
+	font-family: Verdana, sans-serif;
+	font-size: var(--text-size-regular);
+	line-height: 2em;
+	color: var(--text-color-regular);
+	background: repeating-linear-gradient(
+		45deg,
+		var(--background-primary),
+		var(--background-primary) 5px,
+		var(--background-secondary) 5px,
+		var(--background-secondary) 20px
+	);
+	margin: 0;
+	padding: 0;
+	overflow-x: hidden;
+}
+
+span.caption {
+	user-select: none;
+}
+
+a {
+	color: var(--text-color-regular);
+}
+
+button {
+	cursor: pointer;
+}
+
+button[type]:not(.widget) {
+	cursor: default;
+}
+
+input[type]:not(.widget), button[type]:not(.widget), select {
+	box-sizing: border-box;
+	display: block;
+	color: var(--text-color-regular);
+	transition: all 0.6s ease;
+	background-color: var(--dark-secondary);
+	border: var(--common-border);
+	box-shadow: 0px 5px 15px 0px rgba(0,0,0,0.5);
+	font-size: var(--text-size-regular);
+}
+
+input[type]:not(.widget):hover, button[type]:not(.widget):hover, select:hover {
+	background-color: var(--dark-tertiary);
+	box-shadow: 0px 5px 20px 0px rgba(0,0,0,0.75);
+}
+
+input[type]:not(.widget):focus, button[type]:not(.widget):focus, select:focus {
+	background-color: black;
+}
+
+label {
+	display: none;
+}
+
+ul.flashes {
+	text-align: center;
+	list-style-type: none;
+}
+
+input[type]:not(.widget), button[type]:not(.widget), select {
+	box-sizing: border-box;
+}
+
+li.error {
+	font-style: italic;
+	display: block;
+	text-align: center;
+	user-select: none;
+}
+
+input[type]:not(.widget), button[type]:not(.widget), select {
+	padding: var(--common-padding);
+}
+
+input[type]:not(.widget), select {
+	margin-top: var(--common-margin);
+	margin-bottom: var(--common-margin);
+}
+
+button[type=submit]:not(.widget) {
+	margin-top: calc(var(--resize-offset) + var(--common-margin));
+}
+
+button[type=submit]:not(.widget) {
+	font-size: var(--text-size-regular);
+	margin-top: calc(var(--common-margin) + var(--resize-offset));
+	margin-bottom: calc(var(--common-margin) + var(--resize-offset));
+}
+
+button[type=submit]:not(.widget):hover {
+	padding-top: calc(var(--common-padding) + var(--resize-offset));
+	padding-bottom: calc(var(--common-padding) + var(--resize-offset));
+	margin-top: var(--common-margin);
+	margin-bottom: var(--common-margin);
+}
+
+form:invalid button[type=submit]:not(.widget):hover {
+	border: var(--common-border-invalid);
+}
+
+/* header */
+
+header {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	background-color: var(--dark-secondary);
+	box-shadow: 0px 5px 15px 0px rgba(0,0,0,0.75);
+	padding-top: 2vh;
+	padding-bottom: 2vh;
+	padding-left: 2vw;
+	padding-right: 2vw;
+	margin-bottom: 2vh;
+	user-select: none;
+	border-bottom: 1vh solid transparent;
+	border-image: linear-gradient(90deg, var(--gradient-primary) 0%, var(--gradient-secondary) 100%);
+	border-image-slice: 1;
+}
+
+header > img#icon {
+	display: flex;
+	max-height: 8vh;
+	max-width: 8vw;
+	margin: auto;
+}
+
+header > div.menu-component {
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+/* footer */
+
+body {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+main {
+	flex: 1;
+	width: 80vw;
+	margin: auto;
+}
+
+footer {
+	user-select: none;
+	text-align: center;
+	background: linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+footer span.self-name {
+	font-style: italic;
+}
+
+button.widget.logout {
+	background: url("/static/icons/exit.svg");
+	background-size: cover;
+}
+
+a.widget.self {
+	background: url("/static/icons/entrance.svg");
+	background-size: cover;
+}
+
+.widget {
+	display: block;
+	background: none;
+	border: none;
+	width: var(--widget-square);
+	height: var(--widget-square);
+	padding: 0;
+	font-size: 0;
+	cursor: pointer;
+	transition: opacity 0.4s ease-in-out;
+
+	-webkit-user-drag: none;
+	-khtml-user-drag: none;
+	-moz-user-drag: none;
+	-o-user-drag: none;
+	user-drag: none;
+}
+
+.widget:hover {
+	opacity: var(--opacity-selected);
+}
+
+.widget:active {
+	opacity: var(--opacity-click);
+}
+
+dt {
+	font-style: italic;
+	user-select: none;
+}
+
+ul#visibility-select {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	margin-top: var(--common-margin);
+	margin-bottom: var(--common-margin);
+	padding: 0;
+	padding-bottom: var(--common-padding);
+	border-bottom: var(--separator-border);
+}
+
+ul#visibility-select > li {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+ul#visibility-select > li > a {
+	font-size: 0;
+	user-select: none;
+}
+
+ul#visibility-select > li.private > a {
+	background: url("/static/icons/lock.svg");
+	background-size: cover;
+}
+
+ul#visibility-select > li.public > a {
+	background: url("/static/icons/cloud.svg");
+	background-size: cover;
+}
+
+ul.listing {
+	margin-top: var(--common-margin);
+	margin-bottom: var(--common-margin);
+	padding: 0;
+	display: block;
+	min-height: var(--common-margin);
+}
+
+ul.listing li.entry {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding: var(--common-padding);
+	color: var(--text-color-highlight);
+}
+
+ul.listing li.entry a.access {
+	text-decoration: none;
+}
+
+ul.listing li.entry:hover span.basename {
+	color: var(--text-color-highlight);
+}
+
+ul.listing li.entry:not(:first-child) {
+	border-top: var(--separator-border);
+}
+
+ul.listing li.entry div.entry-component {
+	display: flex;
+	flex-direction: row;
+}
+
+ul.listing li.entry:not(:hover) .widget {
+	opacity: 0;
+}

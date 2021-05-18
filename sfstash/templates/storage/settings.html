@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block title %}Settings for {{ file.path.name }}{% endblock %}
+{% block head %}
+	{{ super() }}
+	<link href="{{ url_for("static", filename="for/storage/settings.css") }}" rel="stylesheet" />
+{% endblock %}
+{% block content %}
+	<form class="move" action="{{ url_for("storage.settings_trampoline", visibility=visibility, owner=owner, path=file.path.relative_to(owner.home(visibility))) }}" method="POST">
+		<button title="Move to path" class="widget" type="submit">Submit</button>
+		<input name="replace" id="move-replace" type="checkbox" />
+		<label title="Replace on path conflict" class="widget" for="move-replace">Replace</label>
+		<input title="Destination path" type="text" name="move-path" placeholder="Move to..." value="{{ file.path.relative_to(owner.home(visibility)) }}" required />
+	</form>
+	<form class="toggle {{ visibility }}" action="{{ url_for("storage.settings_trampoline", visibility=visibility, owner=owner, path=file.path.relative_to(owner.home(visibility))) }}" method="POST">
+		<button title="{% if visibility == model.Visibility.public %}Revoke visibility{% elif visibility == model.Visibility.private %}Publish{% endif %}" class="widget" type="submit">Submit</button>
+		<input name="replace" id="toggle-replace" type="checkbox" />
+		<label title="Replace on path conflict" class="widget" for="toggle-replace">Replace</label>
+		<input title="Destination path" type="text" name="toggle-path" placeholder="{% if visibility == model.Visibility.public %}Revoke visibility to...{% elif visibility == model.Visibility.private %}Publish to...{% endif %}" value="{{ file.path.relative_to(owner.home(visibility)) }}" required />
+	</form>
+	<form class="remove" action="{{ url_for("storage.settings_trampoline", visibility=visibility, owner=owner, path=file.path.relative_to(owner.home(visibility))) }}" method="POST">
+		<button title="Remove" class="widget" name="remove" type="submit">Submit</button>
+		<input name="recursive" id="recursive" type="checkbox" />
+		<label title="Remove recursively" class="widget" for="recursive">Recursive</label>
+	</form>
+{% endblock %}
