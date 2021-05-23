@@ -9,7 +9,7 @@
 		<dt>Name</dt>
 		<dd>{{ owner.name }}</dd>
 		<dt>Rank</dt>
-		<dd>{{ owner.rank.format() }}</dd>
+		<dd>{{ owner.rank }}</dd>
 	</dl>
 	{% if user is not none and user.has_access_to(owner) %}
 		<ul class="property-select">
@@ -45,7 +45,7 @@
 			<select id="rank" name="rank" required />
 				{% for r in model.Rank %}
 					{% if r < user.rank %}
-						<option value="{{ r }}">{{ r.format() }}</option>
+						<option value="{{ r.name }}">{{ r }}</option>
 					{% endif %}
 				{% endfor %}
 			</select>

@@ -41,9 +41,6 @@ class Rank(OrderedEnum):
     OWNER = 3
 
     def __str__(self):
-        return self.name
-
-    def format(self) -> str:
         if self == self.USER:
             return "User"
         if self == self.ADMIN:
@@ -58,9 +55,6 @@ class LinkConversion(Enum):
     ID = 2
 
     def __str__(self):
-        return self.name
-
-    def format(self) -> str:
         if self == self.ID:
             return "ID"
         if self == self.NAME:
