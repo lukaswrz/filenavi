@@ -22,6 +22,7 @@ Writing a configuration file is as simple as this:
 icon_url=https://example.com/icon.svg # replace this URL with whatever you like
 database_uri=sqlite:////var/lib/sfstash/sfstash.db # required
 data_dir=/var/lib/sfstash # default: application instance directory
+users_dir=users # relative to `data_dir`
 ```
 
 Configuration files will be searched in this order:
