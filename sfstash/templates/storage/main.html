@@ -7,7 +7,7 @@
 {% endblock %}
 {% block content %}
 	{% if files is defined %}
-		<a {% if parent is not none %}href="{{ parent }}"{% endif %} class="up widget">Up</a>
+		<a title="Parent directory" {% if parent is not none %}href="{{ parent }}"{% endif %} class="up widget">Up</a>
 		<ul class="listing {{ visibility }}">
 			{% for f in files %}
 				{% set fmtname = f.path.name + ("/" if f.path.is_dir() and not (f.path|string).endswith("/") else "") %}
