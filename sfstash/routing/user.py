@@ -29,7 +29,7 @@ def register_trampoline():
     if not all(p in request.form for p in ["name", "password", "rank"]):
         raise MalformedRequest
 
-    if request.form["rank"] not in [str(r) for r in model.Rank]:
+    if request.form["rank"] not in [r.name for r in model.Rank]:
         raise MalformedRequest
 
     name = request.form["name"]
@@ -82,13 +82,13 @@ def settings_trampoline(owner):
     if "name" in request.form:
         owner.name = request.form["name"]
     if "link-conversion" in request.form:
-        if request.form["link-conversion"] not in [str(lc) for lc in model.LinkConversion]:
+        if request.form["link-conversion"] not in [lc.name for lc in model.LinkConversion]:
             raise MalformedRequest
         owner.link_conversion = model.LinkConversion[request.form["link-conversion"]]
     if "rank" in request.form:
         if user.rank <= owner.rank or user.rank <= model.Rank.ADMIN:
             raise Unauthorized
-        if request.form["rank"] not in [str(r) for r in model.Rank]:
+        if request.form["rank"] not in [r.name for r in model.Rank]:
             raise MalformedRequest
         new_rank = model.Rank[request.form["rank"]]
         if new_rank >= user.rank:

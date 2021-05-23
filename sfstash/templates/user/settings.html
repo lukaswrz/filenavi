@@ -12,7 +12,7 @@
 		<span class="caption">Select link conversion mode</span>
 		<select name="link-conversion">
 			{% for lc in model.LinkConversion %}
-				<option value="{{ lc }}" {% if lc == owner.link_conversion %}selected{% endif %}>{{ lc.format() }}</option>
+				<option value="{{ lc.name }}" {% if lc == owner.link_conversion %}selected{% endif %}>{{ lc }}</option>
 			{% endfor %}
 		</select>
 		{% if user == owner %}
@@ -23,7 +23,7 @@
 			<select id="rank" name="rank" required />
 				{% for r in model.Rank %}
 					{% if r < user.rank %}
-						<option value="{{ r }}">{{ r.format() }}</option>
+						<option value="{{ r.name }}">{{ r }}</option>
 					{% endif %}
 				{% endfor %}
 			</select>
