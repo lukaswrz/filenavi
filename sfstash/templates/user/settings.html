@@ -23,7 +23,7 @@
 			<select id="rank" name="rank" required />
 				{% for r in model.Rank %}
 					{% if r < user.rank %}
-						<option value="{{ r.name }}">{{ r }}</option>
+						<option value="{{ r.name }}" {% if r == owner.rank %}selected{% endif %}>{{ r }}</option>
 					{% endif %}
 				{% endfor %}
 			</select>
