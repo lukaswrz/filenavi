@@ -69,9 +69,13 @@ class User(db.Model):
     name = db.Column(db.Text, unique=True, nullable=False)
     _password = db.Column(db.Text, unique=False, nullable=False)
     rank = db.Column(db.Enum(Rank), unique=False, nullable=False)
-    link_conversion = db.Column(db.Enum(LinkConversion), unique=False, nullable=False)
+    link_conversion = db.Column(
+        db.Enum(LinkConversion),
+        unique=False,
+        nullable=False)
 
-    def __init__(self, name: str, password: str, rank: Rank, link_conversion: LinkConversion = LinkConversion.NAME):
+    def __init__(self, name: str, password: str, rank: Rank,
+                 link_conversion: LinkConversion = LinkConversion.NAME):
         self.name = name
         self.password = password
         self.rank = rank
@@ -101,7 +105,7 @@ class User(db.Model):
                 self.rank >= Rank.ADMIN and self.rank > thing.rank)
         if isinstance(thing, File):
             return thing.is_accessible_by(self)
-        raise TypeError
+        raise TypeError("Argument must be of type User or File")
 
     @property
     def password(self):
@@ -241,7 +245,8 @@ class File:
         if user is None:
             return public
 
-        return public or user == self.owner or user.rank >= Rank.ADMIN
+        return public or user == self.owner or (
+            user.rank >= Rank.ADMIN and user.rank > self.owner.rank)
 
     @staticmethod
     def format_size(num: int, suffix: str = "B"):
