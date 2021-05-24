@@ -106,7 +106,8 @@ Restart=on-failure
 ReadWritePaths=/var/lib/sfstash
 ```
 
-Now, nginx has to be configured to use uWSGI:
+Now, nginx has to be configured to use uWSGI (`client_max_body_size` is
+especially important here):
 
 ```nginx
 server {
@@ -119,6 +120,8 @@ server {
 	}
 
 	sendfile on;
+	# this is the request upload limit, adjust it according to your needs
+	client_max_body_size 32G;
 
 	# put your TLS configuration here instead:
 	listen 80;
