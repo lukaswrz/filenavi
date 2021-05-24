@@ -2,7 +2,7 @@ from flask import Blueprint, flash, redirect, url_for, render_template, request,
 
 from sfstash import model
 from .wrap import require_authentication
-from .error import MalformedRequest, Unauthorized, NotAuthenticated
+from .error import MalformedRequest, Unauthorized, NotAuthenticated, NotAccessible
 
 INLINE_EXTENSIONS = [
     "txt",
@@ -53,10 +53,13 @@ def main(owner, visibility, path=None):
         return redirect(f"{request.path}/")
 
     files = []
-    for f in path.iterdir():
-        f = f.relative_to(home)
+    try:
+        for f in path.iterdir():
+            f = f.relative_to(home)
 
-        files.append(model.File(f, owner, visibility))
+            files.append(model.File(f, owner, visibility))
+    except:
+        raise NotAccessible
 
     parent = None
     if not home.resolve() == path.resolve():

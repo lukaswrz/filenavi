@@ -19,7 +19,8 @@ from .routing.error import (
     Unauthorized,
     NotAuthenticated,
     AuthenticationFailure,
-    MalformedRequest)
+    MalformedRequest,
+    NotAccessible)
 
 
 def create_app(test_config=None):
@@ -89,6 +90,7 @@ def create_app(test_config=None):
     @app.errorhandler(NotAuthenticated)
     @app.errorhandler(AuthenticationFailure)
     @app.errorhandler(MalformedRequest)
+    @app.errorhandler(NotAccessible)
     def handle_error(error):
         flash(error.message, "error")
 
