@@ -13,7 +13,7 @@
 				{% set fmtname = f.path.name + ("/" if f.path.is_dir() and not (f.path|string).endswith("/") else "") %}
 				<li class="entry">
 					<div class="entry-component">
-						<a class="access" href="./{{ fmtname }}" }}>
+						<a class="access" href="./{{ fmtname|urlencode }}" }}>
 							<span class="basename">{{ fmtname }}</span>
 						</a>
 						{% if f.visibility == model.Visibility.public %}

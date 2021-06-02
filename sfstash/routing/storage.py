@@ -50,7 +50,7 @@ def main(owner, visibility, path=None):
         raise Unauthorized
 
     if not request.path.endswith("/"):
-        return redirect(f"{request.path}/")
+        return redirect(f"{request.url}/")
 
     files = []
     try:
