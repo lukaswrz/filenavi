@@ -78,6 +78,7 @@ input[type]:not(.widget), button[type]:not(.widget), select {
 	display: block;
 	color: var(--text-color-regular);
 	transition: all 0.6s ease;
+	transition-property: background, padding, margin, border;
 	background-color: var(--dark-secondary);
 	border: var(--common-border);
 	box-shadow: 0px 5px 15px 0px rgba(0,0,0,0.5);
