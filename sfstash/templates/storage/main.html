@@ -10,10 +10,12 @@
 		<a title="Parent directory" {% if parent is not none %}href="{{ parent }}"{% endif %} class="up widget">Up</a>
 		<ul class="listing {{ visibility }}">
 			{% for f in files %}
-				{% set fmtname = f.path.name + ("/" if f.path.is_dir() and not (f.path|string).endswith("/") else "") %}
+				{% set tail = "/" if f.path.is_dir() and not (f.path|string).endswith("/") else "" %}
+				{% set fmtname = f.path.name + tail %}
+				{% set urlname = (f.path.name|urlencode) + tail %}
 				<li class="entry">
 					<div class="entry-component">
-						<a class="access" href="./{{ fmtname|urlencode }}" }}>
+						<a class="access" href="./{{ urlname }}" }}>
 							<span class="basename">{{ fmtname }}</span>
 						</a>
 						{% if f.visibility == model.Visibility.public %}
