@@ -21,7 +21,7 @@ Writing a configuration file is as simple as this:
 [sfstash]
 icon_url=https://example.com/icon.svg # replace this URL with whatever you like
 database_uri=sqlite:////var/lib/sfstash/sfstash.db # required
-data_dir=/var/lib/sfstash # default: application instance directory
+data_dir=/var/lib/sfstash/data # default: application instance directory
 users_dir=users # relative to `data_dir`
 ```
 
@@ -42,7 +42,7 @@ useradd -r -s /bin/false sfstash
 Next, clone the repository into `/opt`:
 
 ```sh
-mkdir -p -m 755 /opt/sfstash
+mkdir -p /opt/sfstash
 git clone https://github.com/lukaswrz/sfstash /opt/sfstash
 ```
 
@@ -63,19 +63,22 @@ which for simplicity in this case is defined as
 Install Redis for session data (distribution-dependent):
 
 ```sh
-yay -S redis # or `sudo apt install`, ...
+pacman -S redis # or `apt install`, ...
 ```
 
 Create the data directory:
 
 ```sh
-mkdir -p -m 755 /var/lib/sfstash
+mkdir -p /var/lib/sfstash/data
 ```
 
 Set the correct permissions:
 
 ```sh
-chown -R sfstash /opt/sfstash /var/lib/sfstash
+chmod -R 500 /opt/sfstash
+chmod -R 700 /var/lib/sfstash
+chmod -R 770 /var/lib/sfstash/data
+chown -R sfstash:sfstash /opt/sfstash /var/lib/sfstash
 ```
 
 Now is a good time to [create the configuration file](#configuration), as the
@@ -98,7 +101,7 @@ AssertPathExists=/var/lib/sfstash
 [Service]
 User=sfstash
 Type=simple
-ExecStart=/usr/bin/uwsgi --plugin python --socket :6670 --manage-script-name --module sfstash.wsgi:application
+ExecStart=/usr/bin/uwsgi --plugin python --socket localhost:6670 --manage-script-name --module sfstash.wsgi:application
 WorkingDirectory=/opt/sfstash
 TimeoutStopSec=20
 KillMode=mixed
@@ -136,7 +139,7 @@ systemctl start redis sfstash nginx
 
 Now, you can login as the user "sfstash" with the password "sfstash". It is
 of course highly recommended to change the username and password, as this user
-has the `owner` rank, which means that it can do basically anything.
+has the owner rank, which means that it can basically do anything.
 
 ## Icons
 
@@ -144,5 +147,5 @@ You can set a custom header and tab icon via the `icon_url` configuration
 option.
 
 The remaining UI icons are from
-[here](https://github.com/davidmerfield/Public-Icons), but have been slightly
-altered.
+[here](https://github.com/davidmerfield/Public-Icons), but have been altered
+slightly.
