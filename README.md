@@ -9,10 +9,6 @@ sfstash is a simple web-based interface to manage and publish/embed files.
 I have not yet actually tested whether this application is secure, so use it at
 your own risk.
 
-## Screenshot
-
-![Screenshot](https://2gbcss.net/sfstashscr.png)
-
 ## Configuration
 
 Writing a configuration file is as simple as this:
