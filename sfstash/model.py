@@ -152,6 +152,35 @@ class Visibility(Enum):
             return Visibility.public
 
 
+class Share(db.Model):
+    __tablename__ = "shares"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, unique=True, nullable=False)
+    # the owner can delete the share (or transfer ownership)
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+
+    def __init__(self, name: str):
+        self.name = name
+
+
+class Permission(Enum):
+    ADD = 1 # view, upload
+    MODIFY = 2 # view, upload, move
+    FULL = 3 # view, upload, move, remove
+
+
+class Membership(db.Model):
+    __tablename__ = "memberships"
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    share_id = db.Column(db.Integer, db.ForeignKey("share.id"), primary_key=True)
+    permission = db.Column(db.Enum(Permission), nullable=False)
+
+    user = relationship('User', backref=backref('user_association'))
+    share = relationship('Share', backref=backref('share_association'))
+
+
 class File:
     def __init__(
             self,
