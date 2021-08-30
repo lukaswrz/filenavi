@@ -9,6 +9,7 @@ from sqlalchemy.orm import synonym
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import current_app, session
 from sqlalchemy.exc import NoResultFound
+import humanfriendly
 
 db = SQLAlchemy()
 
@@ -278,9 +279,5 @@ class File:
             user.rank >= Rank.ADMIN and user.rank > self.owner.rank)
 
     @staticmethod
-    def format_size(num: int, suffix: str = "B"):
-        for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
-            if abs(num) < 1024:
-                return f"{num:3.1f}{unit}{suffix}"
-            num /= 1024
-        return f"{num:.1f}Yi{suffix}"
+    def format_size(size: int) -> str:
+        return humanfriendly.format_size(size, binary=True)
