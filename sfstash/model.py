@@ -5,7 +5,7 @@ from os import rename
 from datetime import datetime, timezone
 
 from flask_sqlalchemy import SQLAlchemy, event
-from sqlalchemy.orm import synonym
+from sqlalchemy.orm import synonym, relationship, backref
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import current_app, session
 from sqlalchemy.exc import NoResultFound
