@@ -7,6 +7,7 @@ from flask import Flask, session, flash, redirect, url_for, request
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask.cli import with_appcontext
+from humanfriendly import parse_size
 import click
 
 from . import model
@@ -146,6 +147,7 @@ def parse_config(app):
         "DATA_DIR": section.get("data_dir", Path(app.instance_path) / "data"),
         "USERS_DIR": section.get("users_dir", Path("users")),
         "ICON_URL": section.get("icon_url", None),
+        "MAX_CONTENT_LENGTH": parse_size(section.get("max_content_length")),
     }
 
     return rv
