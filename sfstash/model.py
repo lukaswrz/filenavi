@@ -9,7 +9,7 @@ from sqlalchemy.orm import synonym
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import current_app, session
 from sqlalchemy.exc import NoResultFound
-import humanfriendly
+from humanfriendly import format_size
 
 db = SQLAlchemy()
 
@@ -280,4 +280,4 @@ class File:
 
     @staticmethod
     def format_size(size: int) -> str:
-        return humanfriendly.format_size(size, binary=True)
+        return format_size(size, binary=True)

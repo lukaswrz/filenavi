@@ -2,3 +2,4 @@ flask
 flask-session
 flask-sqlalchemy
 redis
+humanfriendly
