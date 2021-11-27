@@ -118,6 +118,7 @@ def parse_config(app):
     paths = [
         Path.home() / ".config" / "sfstash" / basename,
         Path("/etc") / "sfstash" / basename,
+        basename
     ]
 
     xdg_config_home = os.environ.get("XDG_CONFIG_HOME", None)
