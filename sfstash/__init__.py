@@ -142,6 +142,8 @@ def parse_config(app):
         else:
             raise IndexError("Invalid section")
 
+    assert section is not None
+
     rv = {
         "SQLALCHEMY_DATABASE_URI": section.get("database_uri"),
         "DATA_DIR": section.get("data_dir", Path(app.instance_path) / "data"),
