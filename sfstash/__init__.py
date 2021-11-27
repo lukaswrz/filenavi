@@ -87,11 +87,6 @@ def create_app(test_config=None):
         new_url = urlunparse(current_url._replace(path=new_path))
         return redirect(new_url)
 
-    @app.errorhandler(Unauthorized)
-    @app.errorhandler(NotAuthenticated)
-    @app.errorhandler(AuthenticationFailure)
-    @app.errorhandler(MalformedRequest)
-    @app.errorhandler(NotAccessible)
     def handle_error(error):
         flash(error.message, "error")
 
@@ -104,6 +99,12 @@ def create_app(test_config=None):
                     visibility=model.Visibility.private))
         else:
             return redirect(url_for("site.login"))
+
+    app.errorhandler(Unauthorized)(handle_error)
+    app.errorhandler(NotAuthenticated)(handle_error)
+    app.errorhandler(AuthenticationFailure)(handle_error)
+    app.errorhandler(MalformedRequest)(handle_error)
+    app.errorhandler(NotAccessible)(handle_error)
 
     from .model import db
     db.init_app(app)
@@ -118,7 +119,7 @@ def parse_config(app):
     paths = [
         Path.home() / ".config" / "sfstash" / basename,
         Path("/etc") / "sfstash" / basename,
-        basename
+        Path(basename)
     ]
 
     xdg_config_home = os.environ.get("XDG_CONFIG_HOME", None)
@@ -147,10 +148,10 @@ def parse_config(app):
 
     rv = {
         "SQLALCHEMY_DATABASE_URI": section.get("database_uri"),
-        "DATA_DIR": section.get("data_dir", Path(app.instance_path) / "data"),
-        "USERS_DIR": section.get("users_dir", Path("users")),
+        "DATA_DIR": Path(section.get("data_dir", str(Path(app.instance_path) / "data"))),
+        "USERS_DIR": Path(section.get("users_dir", "users")),
         "ICON_URL": section.get("icon_url", None),
-        "MAX_CONTENT_LENGTH": parse_size(section.get("max_content_length")),
+        "MAX_CONTENT_LENGTH": parse_size(section.get("max_content_length", "16MiB")),
     }
 
     return rv
