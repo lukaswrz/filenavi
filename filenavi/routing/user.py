@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, redirect, url_for, render_template, request
 
-from sfstash import model
+from filenavi import model
 from .wrap import require_authentication
 from .error import AuthenticationFailure, MalformedRequest, Unauthorized
 

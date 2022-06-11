@@ -4,7 +4,7 @@ from flask import session
 from werkzeug.routing import BaseConverter, ValidationError
 from sqlalchemy.exc import NoResultFound
 
-from sfstash import model
+from filenavi import model
 
 
 class UserIdConverter(BaseConverter):

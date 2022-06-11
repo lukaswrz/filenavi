@@ -3,7 +3,7 @@ from enum import Enum
 
 from flask import session, request
 
-from sfstash import model
+from filenavi import model
 from .error import Unauthorized, NotAuthenticated, MalformedRequest
 
 

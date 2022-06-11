@@ -1,8 +1,8 @@
-# sfstash
+# filenavi
 
 ## Synopsis
 
-sfstash is a simple web-based interface to manage and publish/embed files.
+A simple web-based interface to manage and publish/embed files.
 
 ## Disclaimer
 
@@ -14,32 +14,32 @@ your own risk.
 Writing a configuration file is as simple as this:
 
 ```ini
-[sfstash]
+[filenavi]
 icon_url=https://example.com/icon.svg # replace this URL with whatever you like
-database_uri=sqlite:////var/lib/sfstash/sfstash.db # required
-data_dir=/var/lib/sfstash/data # default: application instance directory
+database_uri=sqlite:////var/lib/filenavi/filenavi.db # required
+data_dir=/var/lib/filenavi/data # default: application instance directory
 users_dir=users # relative to `data_dir`
 ```
 
 Configuration files will be searched in this order:
 
 1. `$XDG_CONFIG_HOME/config.ini`
-2. `~/.config/sfstash/config.ini`
-3. `/etc/sfstash/config.ini`
+2. `~/.config/filenavi/config.ini`
+3. `/etc/filenavi/config.ini`
 
 ## Example installation
 
 First, the service user has to be created, as follows:
 
 ```sh
-useradd -r -s /bin/false sfstash
+useradd -r -s /bin/false filenavi
 ```
 
 Next, clone the repository into `/opt`:
 
 ```sh
-mkdir -p /opt/sfstash
-git clone https://github.com/lukaswrz/sfstash /opt/sfstash
+mkdir -p /opt/filenavi
+git clone https://github.com/lukaswrz/filenavi /opt/filenavi
 ```
 
 Now, the dependencies have to be installed. Make sure that they are either
@@ -54,7 +54,7 @@ Aside from Python dependencies, you need 2 database engines: Redis for session
 data and an SQL database engine for user accounts. The SQL database is
 user-defined inside of the database URI configuration option (`database_uri`),
 which for simplicity in this case is defined as
-`sqlite:////var/lib/sfstash/sfstash.db`.
+`sqlite:////var/lib/filenavi/filenavi.db`.
 
 Install Redis for session data (distribution-dependent):
 
@@ -65,16 +65,16 @@ pacman -S redis # or `apt install`, ...
 Create the data directory:
 
 ```sh
-mkdir -p /var/lib/sfstash/data
+mkdir -p /var/lib/filenavi/data
 ```
 
 Set the correct permissions:
 
 ```sh
-chmod -R 500 /opt/sfstash
-chmod -R 700 /var/lib/sfstash
-chmod -R 770 /var/lib/sfstash/data
-chown -R sfstash:sfstash /opt/sfstash /var/lib/sfstash
+chmod -R 500 /opt/filenavi
+chmod -R 700 /var/lib/filenavi
+chmod -R 770 /var/lib/filenavi/data
+chown -R filenavi:filenavi /opt/filenavi /var/lib/filenavi
 ```
 
 Now is a good time to [create the configuration file](#configuration), as the
@@ -83,26 +83,26 @@ database initialization process requires the database URI to be defined.
 Initialize the database:
 
 ```sh
-runuser -u sfstash -- sh -c "FLASK_APP=sfstash FLASK_ENV=development flask init-db"
+runuser -u filenavi -- sh -c "FLASK_APP=filenavi FLASK_ENV=development flask init-db"
 ```
 
-Create a systemd unit file, e.g. as `/etc/systemd/system/sfstash.service`:
+Create a systemd unit file, e.g. as `/etc/systemd/system/filenavi.service`:
 
 ```ini
 [Unit]
-Description=sfstash file service
+Description=filenavi file service
 After=network.target
-AssertPathExists=/var/lib/sfstash
+AssertPathExists=/var/lib/filenavi
 
 [Service]
-User=sfstash
+User=filenavi
 Type=simple
-ExecStart=/usr/bin/uwsgi --plugin python --socket localhost:6670 --manage-script-name --module sfstash.wsgi:application
-WorkingDirectory=/opt/sfstash
+ExecStart=/usr/bin/uwsgi --plugin python --socket localhost:6670 --manage-script-name --module filenavi.wsgi:application
+WorkingDirectory=/opt/filenavi
 TimeoutStopSec=20
 KillMode=mixed
 Restart=on-failure
-ReadWritePaths=/var/lib/sfstash
+ReadWritePaths=/var/lib/filenavi
 ```
 
 Now, nginx has to be configured to use uWSGI (`client_max_body_size` is
@@ -130,10 +130,10 @@ server {
 To finish the setup off, run the services:
 
 ```sh
-systemctl start redis sfstash nginx
+systemctl start redis filenavi nginx
 ```
 
-Now, you can login as the user "sfstash" with the password "sfstash". It is
+Now, you can login as the user "filenavi" with the password "filenavi". It is
 of course highly recommended to change the username and password, as this user
 has the owner rank, which means that it can basically do anything.
 
