@@ -1,6 +1,6 @@
 from flask import session, Blueprint, redirect, url_for, render_template, request
 
-from sfstash import model
+from filenavi import model
 from .error import AuthenticationFailure, MalformedRequest
 from sqlalchemy.exc import NoResultFound
 

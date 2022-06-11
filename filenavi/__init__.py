@@ -54,7 +54,7 @@ def create_app(test_config=None):
     @app.cli.command("init-db")
     def init_db():
         model.db.create_all()
-        owner = model.User("sfstash", "sfstash", model.Rank.OWNER)
+        owner = model.User("filenavi", "filenavi", model.Rank.OWNER)
         model.db.session.add(owner)
         model.db.session.commit()
         click.echo("Initialized the database")
@@ -117,14 +117,14 @@ def parse_config(app):
     basename = "config.ini"
 
     paths = [
-        Path.home() / ".config" / "sfstash" / basename,
-        Path("/etc") / "sfstash" / basename,
+        Path.home() / ".config" / "filenavi" / basename,
+        Path("/etc") / "filenavi" / basename,
         Path(basename)
     ]
 
     xdg_config_home = os.environ.get("XDG_CONFIG_HOME", None)
     if xdg_config_home is not None:
-        paths.insert(0, Path(xdg_config_home) / "sfstash" / basename)
+        paths.insert(0, Path(xdg_config_home) / "filenavi" / basename)
 
     path = None
     for p in paths:
@@ -139,7 +139,7 @@ def parse_config(app):
 
     section = None
     for s in config.sections():
-        if s == "sfstash":
+        if s == "filenavi":
             section = config[s]
         else:
             raise IndexError("Invalid section")
