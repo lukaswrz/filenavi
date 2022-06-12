@@ -4,21 +4,16 @@
 
 A simple web-based interface to manage and publish/embed files.
 
-## Disclaimer
-
-I have not yet actually tested whether this application is secure, so use it at
-your own risk.
-
 ## Configuration
 
 Writing a configuration file is as simple as this:
 
 ```ini
 [filenavi]
-icon_url=https://example.com/icon.svg # replace this URL with whatever you like
-database_uri=sqlite:////var/lib/filenavi/filenavi.db # required
-data_dir=/var/lib/filenavi/data # default: application instance directory
-users_dir=users # relative to `data_dir`
+icon_url=https://example.com/icon.svg
+database_uri=sqlite:////var/lib/filenavi/filenavi.db
+data_dir=/var/lib/filenavi/data
+users_dir=users
 ```
 
 Configuration files will be searched in this order:
@@ -27,54 +22,61 @@ Configuration files will be searched in this order:
 2. `~/.config/filenavi/config.ini`
 3. `/etc/filenavi/config.ini`
 
-## Example installation
+## Installation
 
 First, the service user has to be created, as follows:
 
-```sh
-useradd -r -s /bin/false filenavi
+```bash
+useradd --system --shell /usr/bin/nologin filenavi
 ```
 
-Next, clone the repository into `/opt`:
+Next, the repository needs to be cloned. I will choose to clone it into
+`/usr/local/share/webapps`:
 
-```sh
-mkdir -p /opt/filenavi
-git clone https://github.com/lukaswrz/filenavi /opt/filenavi
+```bash
+mkdir --parents /usr/local/share/webapps/filenavi
+git clone https://github.com/lukaswrz/filenavi.git /usr/local/share/webapps/filenavi
+chown --recursive filenavi:filenavi /usr/local/share/webapps/filenavi
 ```
 
 Now, the dependencies have to be installed. Make sure that they are either
-installed globally or within a virtual environment. Here is how they would be
-installed using the `requirements.txt` file in the repository:
+installed globally or within a virtual environment. A `requirements.txt` file
+is provided in the Git repository.
 
-```sh
-pip install -r requirements.txt
+For example:
+
+```bash
+pushd /usr/local/share/webapps/filenavi
+runuser -u filenavi -- python -m venv venv
+runuser -u filenavi -- venv/bin/pip install -r requirements.txt
+popd
 ```
 
 Aside from Python dependencies, you need 2 database engines: Redis for session
 data and an SQL database engine for user accounts. The SQL database is
-user-defined inside of the database URI configuration option (`database_uri`),
-which for simplicity in this case is defined as
+user-defined inside of the database URI [configuration](#configuration) option
+(`database_uri`), which for simplicity in this case is defined as
 `sqlite:////var/lib/filenavi/filenavi.db`.
 
 Install Redis for session data (distribution-dependent):
 
-```sh
-pacman -S redis # or `apt install`, ...
+```bash
+pacman -S redis
 ```
 
 Create the data directory:
 
-```sh
-mkdir -p /var/lib/filenavi/data
+```bash
+mkdir --parents /var/lib/filenavi/data
 ```
 
 Set the correct permissions:
 
-```sh
-chmod -R 500 /opt/filenavi
-chmod -R 700 /var/lib/filenavi
-chmod -R 770 /var/lib/filenavi/data
-chown -R filenavi:filenavi /opt/filenavi /var/lib/filenavi
+```bash
+chmod --recursive 700 /usr/local/share/webapps/filenavi
+chmod --recursive 700 /var/lib/filenavi
+chmod --recursive 770 /var/lib/filenavi/data
+chown --recursive filenavi:filenavi /var/lib/filenavi
 ```
 
 Now is a good time to [create the configuration file](#configuration), as the
@@ -82,55 +84,80 @@ database initialization process requires the database URI to be defined.
 
 Initialize the database:
 
-```sh
-runuser -u filenavi -- sh -c "FLASK_APP=filenavi FLASK_ENV=development flask init-db"
+```bash
+pushd /usr/local/share/webapps/filenavi
+runuser -u filenavi -- env FLASK_APP=filenavi FLASK_ENV=development venv/bin/flask init-db
+popd
 ```
 
-Create a systemd unit file, e.g. as `/etc/systemd/system/filenavi.service`:
+Install uWSGI for the reverse proxy (distribution-dependent):
+
+```bash
+pacman -S uwsgi
+```
+Create a uWSGI configuration file, e.g. as `/etc/uwsgi/filenavi.ini`:
 
 ```ini
-[Unit]
-Description=filenavi file service
-After=network.target
-AssertPathExists=/var/lib/filenavi
+[uwsgi]
+http-socket = :6670
 
-[Service]
-User=filenavi
-Type=simple
-ExecStart=/usr/bin/uwsgi --plugin python --socket localhost:6670 --manage-script-name --module filenavi.wsgi:application
-WorkingDirectory=/opt/filenavi
-TimeoutStopSec=20
-KillMode=mixed
-Restart=on-failure
-ReadWritePaths=/var/lib/filenavi
+uid = filenavi
+gid = filenavi
+
+disable-logging = false
+
+# Adjust this to the desired number of workers.
+workers = 4
+
+chmod-socket = 666
+
+single-interpreter = true
+master = true
+plugin = python
+lazy-apps = true
+enable-threads = true
+
+module = filenavi.wsgi
+
+virtualenv = /usr/local/share/webapps/filenavi/venv
+chdir = /usr/local/share/webapps/filenavi
 ```
+
+For uWSGI to work, there needs to be a systemd service file to launch it as a
+service. This file is shipped with the `uwsgi` package on Arch Linux, but on
+systems that do not ship this file, you're going to have to write one on your
+own.
 
 Now, nginx has to be configured to use uWSGI (`client_max_body_size` is
 especially important here):
 
 ```nginx
 server {
-	# replace example.com with your domain name
+	# Replace this with your domain name.
 	server_name example.com;
 
-	location / {
-		include uwsgi_params;
-		uwsgi_pass localhost:6670;
-	}
+    location / {
+         proxy_pass http://localhost:6670;
+         proxy_set_header Host $host;
+         proxy_set_header X-Real-IP $remote_addr;
+         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+         proxy_set_header X-Forwarded-Proto $scheme;
+    }
 
 	sendfile on;
-	# this is the request upload limit, adjust it according to your needs
+
+	# This is the request upload limit, adjust it according to your needs.
 	client_max_body_size 32G;
 
-	# put your TLS configuration here instead:
+	# Put your TLS configuration here instead.
 	listen 80;
 }
 ```
 
 To finish the setup off, run the services:
 
-```sh
-systemctl start redis filenavi nginx
+```bash
+systemctl start redis.service uwsgi@filenavi.service nginx.service
 ```
 
 Now, you can login as the user "filenavi" with the password "filenavi". It is
