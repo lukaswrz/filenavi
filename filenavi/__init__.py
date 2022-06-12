@@ -117,8 +117,7 @@ def parse_config(app):
     basename = "config.ini"
 
     paths = [
-        Path.home() / ".config" / "filenavi" / basename,
-        Path("/etc") / "filenavi" / basename,
+        Path(Path.cwd().root) / "etc" / "filenavi" / basename,
         Path(basename)
     ]
 

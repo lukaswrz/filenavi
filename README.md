@@ -18,9 +18,8 @@ users_dir=users
 
 Configuration files will be searched in this order:
 
-1. `$XDG_CONFIG_HOME/config.ini`
-2. `~/.config/filenavi/config.ini`
-3. `/etc/filenavi/config.ini`
+1. `/etc/filenavi/config.ini`
+2. `config.ini`
 
 ## Installation
 
