@@ -12,7 +12,7 @@ class UserIdConverter(BaseConverter):
         prefix = "~"
         if value.startswith(prefix):
             try:
-                rv = int(value[len(prefix):])
+                rv = int(value[len(prefix) :])
             except ValueError:
                 raise ValidationError
 
@@ -34,8 +34,7 @@ class UserNameConverter(BaseConverter):
         prefix = "~"
         if value.startswith(prefix):
             try:
-                user = model.User.query.filter_by(
-                    name=value[len(prefix):]).one()
+                user = model.User.query.filter_by(name=value[len(prefix) :]).one()
             except NoResultFound:
                 raise ValidationError
 

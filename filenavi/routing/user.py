@@ -12,10 +12,8 @@ def profile(owner):
     user = model.User.current()
 
     return render_template(
-        "user/profile.html",
-        user=user,
-        users=model.User.query.all(),
-        owner=owner)
+        "user/profile.html", user=user, users=model.User.query.all(), owner=owner
+    )
 
 
 @bp.route("/register/", methods=["POST"])
@@ -59,10 +57,7 @@ def settings(owner):
     if not user.has_access_to(owner):
         raise Unauthorized
 
-    return render_template(
-        "user/settings.html",
-        user=user,
-        owner=owner)
+    return render_template("user/settings.html", user=user, owner=owner)
 
 
 @bp.route("/<user_name:owner>/settings/", methods=["POST"])
@@ -82,7 +77,9 @@ def settings_trampoline(owner):
     if "name" in request.form:
         owner.name = request.form["name"]
     if "link-conversion" in request.form:
-        if request.form["link-conversion"] not in [lc.name for lc in model.LinkConversion]:
+        if request.form["link-conversion"] not in [
+            lc.name for lc in model.LinkConversion
+        ]:
             raise MalformedRequest
         owner.link_conversion = model.LinkConversion[request.form["link-conversion"]]
     if "rank" in request.form:
