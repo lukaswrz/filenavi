@@ -10,7 +10,6 @@ Writing a configuration file is as simple as this:
 
 ```ini
 [filenavi]
-icon_url=https://example.com/icon.svg
 database_uri=sqlite:////var/lib/filenavi/filenavi.db
 data_dir=/var/lib/filenavi/data
 users_dir=users
@@ -165,9 +164,5 @@ has the owner rank, which means that it can basically do anything.
 
 ## Icons
 
-You can set a custom header and tab icon via the `icon_url` configuration
-option.
-
-The remaining UI icons are from
-[here](https://github.com/davidmerfield/Public-Icons), but have been altered
-slightly.
+The UI icons are from [here](https://github.com/davidmerfield/Public-Icons), but
+have been altered.

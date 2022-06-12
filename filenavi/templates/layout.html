@@ -6,9 +6,6 @@
 				<a title="Profile" class="widget self" href="{{ url_for("user.profile", owner=user) }}">{{ user.name }}</a>
 			{% endif %}
 		</div>
-		{% if icon is not none %}
-			<img id="icon" src="{{ icon }}" />
-		{% endif %}
 		<div class="menu-component">
 			{% if user is defined and user is not none %}
 				<form action="{{ url_for("site.logout_trampoline") }}" method="POST">
