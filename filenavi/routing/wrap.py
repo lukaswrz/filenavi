@@ -13,4 +13,5 @@ def require_authentication(f):
         if model.User.current() is None:
             raise NotAuthenticated
         return f(*args, **kwargs)
+
     return wrap

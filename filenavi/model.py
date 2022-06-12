@@ -70,13 +70,15 @@ class User(db.Model):
     name = db.Column(db.Text, unique=True, nullable=False)
     _password = db.Column(db.Text, unique=False, nullable=False)
     rank = db.Column(db.Enum(Rank), unique=False, nullable=False)
-    link_conversion = db.Column(
-        db.Enum(LinkConversion),
-        unique=False,
-        nullable=False)
+    link_conversion = db.Column(db.Enum(LinkConversion), unique=False, nullable=False)
 
-    def __init__(self, name: str, password: str, rank: Rank,
-                 link_conversion: LinkConversion = LinkConversion.NAME):
+    def __init__(
+        self,
+        name: str,
+        password: str,
+        rank: Rank,
+        link_conversion: LinkConversion = LinkConversion.NAME,
+    ):
         self.name = name
         self.password = password
         self.rank = rank
@@ -102,8 +104,7 @@ class User(db.Model):
 
     def has_access_to(self, thing):
         if isinstance(thing, User):
-            return self == thing or (
-                self.rank >= Rank.ADMIN and self.rank > thing.rank)
+            return self == thing or (self.rank >= Rank.ADMIN and self.rank > thing.rank)
         if isinstance(thing, File):
             return thing.is_accessible_by(self)
         raise TypeError("Argument must be of type User or File")
@@ -166,9 +167,9 @@ class Share(db.Model):
 
 
 class Permission(Enum):
-    ADD = 1 # view, upload
-    MODIFY = 2 # view, upload, move
-    FULL = 3 # view, upload, move, remove
+    ADD = 1  # view, upload
+    MODIFY = 2  # view, upload, move
+    FULL = 3  # view, upload, move, remove
 
 
 class Membership(db.Model):
@@ -178,16 +179,14 @@ class Membership(db.Model):
     share_id = db.Column(db.Integer, db.ForeignKey("shares.id"), primary_key=True)
     permission = db.Column(db.Enum(Permission), nullable=False)
 
-    user = relationship('User', backref=backref('user_association'))
-    share = relationship('Share', backref=backref('share_association'))
+    user = relationship("User", backref=backref("user_association"))
+    share = relationship("Share", backref=backref("share_association"))
 
 
 class File:
     def __init__(
-            self,
-            path: Path,
-            owner: User,
-            visibility: Visibility = Visibility.private):
+        self, path: Path, owner: User, visibility: Visibility = Visibility.private
+    ):
         self.path = owner.home(visibility, path)
         self.visibility = visibility
         self.owner = owner
@@ -195,11 +194,10 @@ class File:
         if self.path.exists():
             stat = self.path.stat()
             self.attributes = {
-                "modification": datetime.fromtimestamp(
-                    stat.st_mtime,
-                    tz=timezone.utc),
+                "modification": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc),
                 "symlink": self.path.is_symlink(),
-                "size": stat.st_size}
+                "size": stat.st_size,
+            }
 
     def move(self, new_path: Path, force: bool = False):
         parent = self.owner.home(self.visibility)
@@ -275,8 +273,11 @@ class File:
         if user is None:
             return public
 
-        return public or user == self.owner or (
-            user.rank >= Rank.ADMIN and user.rank > self.owner.rank)
+        return (
+            public
+            or user == self.owner
+            or (user.rank >= Rank.ADMIN and user.rank > self.owner.rank)
+        )
 
     @staticmethod
     def format_size(size: int) -> str:

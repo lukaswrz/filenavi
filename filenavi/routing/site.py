@@ -12,10 +12,8 @@ def login():
     user = model.User.current()
     if user is not None:
         return redirect(
-            url_for(
-                "storage.main",
-                owner=user,
-                visibility=model.Visibility.private))
+            url_for("storage.main", owner=user, visibility=model.Visibility.private)
+        )
 
     return render_template("site/login.html")
 
@@ -38,10 +36,8 @@ def login_trampoline():
 
     session["user_id"] = user.id
     return redirect(
-        url_for(
-            "storage.main",
-            owner=user,
-            visibility=model.Visibility.private))
+        url_for("storage.main", owner=user, visibility=model.Visibility.private)
+    )
 
 
 @bp.route("/logout", methods=["POST"])

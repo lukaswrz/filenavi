@@ -11,25 +11,21 @@ from humanfriendly import parse_size
 import click
 
 from . import model
-from .routing.conv import (
-    UserIdConverter,
-    UserNameConverter,
-    VisibilityConverter)
+from .routing.conv import UserIdConverter, UserNameConverter, VisibilityConverter
 from .routing import site, user, storage
 from .routing.error import (
     Unauthorized,
     NotAuthenticated,
     AuthenticationFailure,
     MalformedRequest,
-    NotAccessible)
+    NotAccessible,
+)
 
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
-    app.config.from_mapping(
-        SQLALCHEMY_TRACK_MODIFICATIONS=False,
-        SESSION_TYPE="redis")
+    app.config.from_mapping(SQLALCHEMY_TRACK_MODIFICATIONS=False, SESSION_TYPE="redis")
 
     user_config = parse_config(app)
     for key in user_config:
@@ -46,9 +42,7 @@ def create_app(test_config=None):
 
     @app.context_processor
     def inject():
-        return {
-            "model": model
-        }
+        return {"model": model}
 
     @app.cli.command("init-db")
     def init_db():
@@ -92,10 +86,8 @@ def create_app(test_config=None):
         user = model.User.current()
         if user is not None:
             return redirect(
-                url_for(
-                    "storage.main",
-                    owner=user,
-                    visibility=model.Visibility.private))
+                url_for("storage.main", owner=user, visibility=model.Visibility.private)
+            )
         else:
             return redirect(url_for("site.login"))
 
@@ -106,6 +98,7 @@ def create_app(test_config=None):
     app.errorhandler(NotAccessible)(handle_error)
 
     from .model import db
+
     db.init_app(app)
     sess.init_app(app)
 
@@ -115,10 +108,7 @@ def create_app(test_config=None):
 def parse_config(app):
     basename = "config.ini"
 
-    paths = [
-        Path(Path.cwd().root) / "etc" / "filenavi" / basename,
-        Path(basename)
-    ]
+    paths = [Path(Path.cwd().root) / "etc" / "filenavi" / basename, Path(basename)]
 
     xdg_config_home = os.environ.get("XDG_CONFIG_HOME", None)
     if xdg_config_home is not None:
@@ -146,7 +136,9 @@ def parse_config(app):
 
     rv = {
         "SQLALCHEMY_DATABASE_URI": section.get("database_uri"),
-        "DATA_DIR": Path(section.get("data_dir", str(Path(app.instance_path) / "data"))),
+        "DATA_DIR": Path(
+            section.get("data_dir", str(Path(app.instance_path) / "data"))
+        ),
         "USERS_DIR": Path(section.get("users_dir", "users")),
         "MAX_CONTENT_LENGTH": parse_size(section.get("max_content_length", "16MiB")),
     }
