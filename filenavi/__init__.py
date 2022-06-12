@@ -47,7 +47,6 @@ def create_app(test_config=None):
     @app.context_processor
     def inject():
         return {
-            "icon": app.config["ICON_URL"],
             "model": model
         }
 
@@ -149,7 +148,6 @@ def parse_config(app):
         "SQLALCHEMY_DATABASE_URI": section.get("database_uri"),
         "DATA_DIR": Path(section.get("data_dir", str(Path(app.instance_path) / "data"))),
         "USERS_DIR": Path(section.get("users_dir", "users")),
-        "ICON_URL": section.get("icon_url", None),
         "MAX_CONTENT_LENGTH": parse_size(section.get("max_content_length", "16MiB")),
     }
 

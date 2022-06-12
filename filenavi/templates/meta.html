@@ -5,9 +5,6 @@
 			<meta charset="utf-8" />
 			<title>{% block title %}{% endblock %} &mdash; filenavi</title>
 			<link href="{{ url_for("static", filename="style.css") }}" rel="stylesheet" />
-			{% if icon is not none %}
-				<link rel="icon" href="{{ icon }}" />
-			{% endif %}
 		{% endblock %}
 	</head>
 	<body>

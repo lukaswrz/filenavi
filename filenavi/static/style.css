@@ -163,13 +163,6 @@ header {
 	border-image-slice: 1;
 }
 
-header > img#icon {
-	display: flex;
-	max-height: 8vh;
-	max-width: 8vw;
-	margin: auto;
-}
-
 header > div.menu-component {
 	margin-top: auto;
 	margin-bottom: auto;
