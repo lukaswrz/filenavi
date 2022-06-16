@@ -106,10 +106,6 @@ def parse_config(app):
 
     paths = [Path(Path.cwd().root) / "etc" / "filenavi" / basename, Path(basename)]
 
-    xdg_config_home = os.environ.get("XDG_CONFIG_HOME", None)
-    if xdg_config_home is not None:
-        paths.insert(0, Path(xdg_config_home) / "filenavi" / basename)
-
     path = None
     for p in paths:
         if p.exists() and p.is_file():
