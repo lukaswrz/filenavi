@@ -1,13 +1,14 @@
 {% extends "layout.html" %}
 {% block title %}Delete {{ owner.name }}{% endblock %}
-{% block head %}
-	{{ super() }}
-	<link href="{{ url_for("static", filename="for/user/delete.css") }}" rel="stylesheet" />
-{% endblock %}
 {% block content %}
-	<form class="delete" action="{{ url_for("user.delete_trampoline", owner=owner) }}" method="POST">
-		<label for="name">Username</label>
-		<input type="text" id="name" name="name" placeholder="Type username to confirm..." required />
-		<button type="submit">Delete</button>
-	</form>
+  <h1>Delete {{ owner.name }}</h1>
+  <form class="delete-user" action="{{ url_for("user.delete_handler", owner=owner) }}" method="POST">
+    <label for="name">Name</label>
+    <input id="name" type="text" name="name" placeholder="Name" required />
+    {% if user == owner %}
+      <label for="password">Password</label>
+      <input id="password" type="password" name="password" placeholder="Current password" required />
+    {% endif %}
+    <button type="submit">Delete</button>
+  </form>
 {% endblock %}

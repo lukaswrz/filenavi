@@ -8,18 +8,23 @@ bp = Blueprint("site", __name__)
 
 
 @bp.route("/")
-def login():
+def index():
     user = model.User.current()
     if user is not None:
         return redirect(
-            url_for("storage.main", owner=user, visibility=model.Visibility.private)
+            url_for("storage.browse", owner=user, visibility=model.Visibility.private)
         )
 
+    return redirect(url_for(".login"))
+
+
+@bp.route("/login")
+def login():
     return render_template("site/login.html")
 
 
 @bp.route("/login", methods=["POST"])
-def login_trampoline():
+def login_handler():
     if "user_id" in session:
         del session["user_id"]
 
@@ -36,12 +41,12 @@ def login_trampoline():
 
     session["user_id"] = user.id
     return redirect(
-        url_for("storage.main", owner=user, visibility=model.Visibility.private)
+        url_for("storage.browse", owner=user, visibility=model.Visibility.private)
     )
 
 
 @bp.route("/logout", methods=["POST"])
-def logout_trampoline():
+def logout_handler():
     if "user_id" in session:
         del session["user_id"]
     return redirect(url_for(".login"))

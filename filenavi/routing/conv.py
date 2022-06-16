@@ -1,18 +1,17 @@
-from re import match
-
-from flask import session
 from werkzeug.routing import BaseConverter, ValidationError
 from sqlalchemy.exc import NoResultFound
+from urllib.parse import quote
 
 from filenavi import model
 
 
 class UserIdConverter(BaseConverter):
+    prefix = "#"
+
     def to_python(self, value):
-        prefix = "~"
-        if value.startswith(prefix):
+        if value.startswith(self.prefix):
             try:
-                rv = int(value[len(prefix) :])
+                rv = int(value[len(self.prefix) :])
             except ValueError:
                 raise ValidationError
 
@@ -26,15 +25,16 @@ class UserIdConverter(BaseConverter):
         raise ValidationError
 
     def to_url(self, value):
-        return f"~{value.id}"
+        return quote(f"{self.prefix}{value.id}")
 
 
 class UserNameConverter(BaseConverter):
+    prefix = "~"
+
     def to_python(self, value):
-        prefix = "~"
-        if value.startswith(prefix):
+        if value.startswith(self.prefix):
             try:
-                user = model.User.query.filter_by(name=value[len(prefix) :]).one()
+                user = model.User.query.filter_by(name=value[len(self.prefix) :]).one()
             except NoResultFound:
                 raise ValidationError
 
@@ -43,7 +43,7 @@ class UserNameConverter(BaseConverter):
         raise ValidationError
 
     def to_url(self, value):
-        return f"~{value.name}"
+        return quote(f"{self.prefix}{value.name}")
 
 
 class VisibilityConverter(BaseConverter):
@@ -54,4 +54,4 @@ class VisibilityConverter(BaseConverter):
             raise ValidationError
 
     def to_url(self, value):
-        return str(value)
+        return quote(str(value))

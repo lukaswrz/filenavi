@@ -17,15 +17,15 @@ INLINE_EXTENSIONS = ["txt", "pdf", "png", "jpg", "jpeg", "gif"]
 bp = Blueprint("storage", __name__)
 
 
-@bp.route("/id/<user_id:owner>/storage/<visibility:visibility>/main/")
-@bp.route("/id/<user_id:owner>/storage/<visibility:visibility>/main/<path:path>")
-def main_id(owner, visibility, path=None):
-    return redirect(url_for(".main", owner=owner, visibility=visibility, path=path))
+@bp.route("/<user_id:owner>/<visibility:visibility>/browse/")
+@bp.route("/<user_id:owner>/<visibility:visibility>/browse/<path:path>")
+def browse_id(owner, visibility, path=None):
+    return redirect(url_for(".browse", owner=owner, visibility=visibility, path=path))
 
 
-@bp.route("/<user_name:owner>/storage/<visibility:visibility>/main/")
-@bp.route("/<user_name:owner>/storage/<visibility:visibility>/main/<path:path>")
-def main(owner, visibility, path=None):
+@bp.route("/<user_name:owner>/<visibility:visibility>/browse/")
+@bp.route("/<user_name:owner>/<visibility:visibility>/browse/<path:path>")
+def browse(owner, visibility, path=None):
     user = model.User.current()
 
     home = owner.home(visibility)
@@ -62,11 +62,11 @@ def main(owner, visibility, path=None):
         raise NotAccessible
 
     parent = None
-    if not home.resolve() == path.resolve():
-        parent = ".."
+    if not home.samefile(path):
+        parent = model.File(path.parent, owner, visibility)
 
     return render_template(
-        "storage/main.html",
+        "storage/browse.html",
         files=files,
         user=user,
         owner=owner,
@@ -76,14 +76,16 @@ def main(owner, visibility, path=None):
     )
 
 
-@bp.route("/<user_name:owner>/storage/<visibility:visibility>/main/", methods=["POST"])
+@bp.route("/<user_name:owner>/<visibility:visibility>/browse/", methods=["POST"])
 @bp.route(
-    "/<user_name:owner>/storage/<visibility:visibility>/main/<path:path>",
-    methods=["POST"],
+    "/<user_name:owner>/<visibility:visibility>/browse/<path:path>", methods=["POST"]
 )
 @require_authentication
-def main_trampoline(owner, visibility, path=None):
+def browse_handler(owner, visibility, path=None):
     user = model.User.current()
+
+    if "files" not in request.files and "directory" not in request.form:
+        raise MalformedRequest
 
     home = owner.home(visibility)
     path = (home / path) if path is not None else home
@@ -105,14 +107,14 @@ def main_trampoline(owner, visibility, path=None):
         directory.mkdir()
     return redirect(
         url_for(
-            ".main", visibility=visibility, path=path.relative_to(home), owner=owner
+            ".browse", visibility=visibility, path=path.relative_to(home), owner=owner
         )
     )
 
 
-@bp.route("/<user_name:owner>/storage/<visibility:visibility>/settings/<path:path>")
+@bp.route("/<user_name:owner>/<visibility:visibility>/move/<path:path>")
 @require_authentication
-def settings(owner, visibility, path=None):
+def move(owner, visibility, path=None):
     user = model.User.current()
 
     home = owner.home(visibility)
@@ -124,7 +126,7 @@ def settings(owner, visibility, path=None):
         raise Unauthorized
 
     return render_template(
-        "storage/settings.html",
+        "storage/move.html",
         file=target,
         user=user,
         owner=owner,
@@ -133,11 +135,11 @@ def settings(owner, visibility, path=None):
 
 
 @bp.route(
-    "/<user_name:owner>/storage/<visibility:visibility>/settings/<path:path>",
+    "/<user_name:owner>/<visibility:visibility>/move/<path:path>",
     methods=["POST"],
 )
 @require_authentication
-def settings_trampoline(owner, visibility, path=None):
+def move_handler(owner, visibility, path=None):
     user = model.User.current()
 
     home = owner.home(visibility)
@@ -150,43 +152,145 @@ def settings_trampoline(owner, visibility, path=None):
 
     rv = redirect(
         url_for(
-            ".main",
+            ".browse",
             visibility=visibility,
             path=path.relative_to(home).parents[0],
             owner=owner,
         )
     )
 
-    if "move-path" in request.form:
-        if not target.path.exists():
-            flash("No such file or directory", "error")
-            return rv
+    if "path" not in request.form:
+        raise MalformedRequest
 
-        try:
-            force = "replace" in request.form
-            target.move(home / request.form["move-path"], force=force)
-        except ValueError:
-            flash("Unable to move file", "error")
-            return rv
-        return rv
-    if "toggle-path" in request.form:
-        try:
-            force = "replace" in request.form
-            target.toggle(request.form["toggle-path"], force=force)
-        except ValueError:
-            flash("Cannot toggle visibility", "error")
-            return rv
-        return rv
-    if "remove" in request.form:
-        recursive = "recursive" in request.form
-        try:
-            target.remove(recursive=recursive)
-        except ValueError:
-            flash("No such file or directory", "error")
-            return rv
-        except OSError:
-            flash("Cannot remove file or directory", "error")
-            return rv
+    if not target.path.exists():
+        flash("No such file or directory", "error")
         return rv
 
-    raise MalformedRequest
+    try:
+        force = "replace" in request.form
+        target.move(home / request.form["move-path"], force=force)
+    except ValueError:
+        flash("Unable to move file", "error")
+        return rv
+    return rv
+
+
+@bp.route("/<user_name:owner>/<visibility:visibility>/toggle/<path:path>")
+@require_authentication
+def toggle(owner, visibility, path=None):
+    user = model.User.current()
+
+    home = owner.home(visibility)
+    path = (home / path) if path is not None else home
+
+    target = model.File(path, owner, visibility)
+
+    if not user.has_access_to(target):
+        raise Unauthorized
+
+    return render_template(
+        "storage/toggle.html",
+        file=target,
+        user=user,
+        owner=owner,
+        visibility=visibility,
+    )
+
+
+@bp.route(
+    "/<user_name:owner>/<visibility:visibility>/toggle/<path:path>",
+    methods=["POST"],
+)
+@require_authentication
+def toggle_handler(owner, visibility, path=None):
+    user = model.User.current()
+
+    home = owner.home(visibility)
+    path = (home / path) if path is not None else home
+
+    target = model.File(home / path, owner, visibility)
+
+    if not user.has_access_to(target):
+        raise Unauthorized
+
+    rv = redirect(
+        url_for(
+            ".browse",
+            visibility=visibility,
+            path=path.relative_to(home).parents[0],
+            owner=owner,
+        )
+    )
+
+    if "path" not in request.form:
+        raise MalformedRequest
+
+    try:
+        force = "replace" in request.form
+        # TODO: Do not require a Path object
+        from pathlib import Path
+
+        target.toggle(Path(request.form["path"]), force=force)
+    except ValueError:
+        flash("Cannot toggle visibility", "error")
+        return rv
+    return rv
+
+
+@bp.route("/<user_name:owner>/<visibility:visibility>/remove/<path:path>")
+@require_authentication
+def remove(owner, visibility, path=None):
+    user = model.User.current()
+
+    home = owner.home(visibility)
+    path = (home / path) if path is not None else home
+
+    target = model.File(path, owner, visibility)
+
+    if not user.has_access_to(target):
+        raise Unauthorized
+
+    return render_template(
+        "storage/remove.html",
+        file=target,
+        user=user,
+        owner=owner,
+        visibility=visibility,
+    )
+
+
+@bp.route(
+    "/<user_name:owner>/<visibility:visibility>/remove/<path:path>",
+    methods=["POST"],
+)
+@require_authentication
+def remove_handler(owner, visibility, path=None):
+    user = model.User.current()
+
+    home = owner.home(visibility)
+    path = (home / path) if path is not None else home
+
+    target = model.File(home / path, owner, visibility)
+
+    if not user.has_access_to(target):
+        raise Unauthorized
+
+    rv = redirect(
+        url_for(
+            ".browse",
+            visibility=visibility,
+            path=path.relative_to(home).parents[0],
+            owner=owner,
+        )
+    )
+
+    recursive = "recursive" in request.form
+    try:
+        target.remove(recursive=recursive)
+    except ValueError:
+        flash("No such file or directory", "error")
+        return rv
+    except OSError:
+        flash("Cannot remove file or directory", "error")
+        return rv
+    return rv

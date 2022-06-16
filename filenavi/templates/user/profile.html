@@ -1,56 +1,53 @@
 {% extends "layout.html" %}
-{% block title %}View {{ owner.name }}{% endblock %}
-{% block head %}
-	{{ super() }}
-	<link href="{{ url_for("static", filename="for/user/profile.css") }}" rel="stylesheet" />
-{% endblock %}
+{% block title %}Profile for {{ owner.name }}{% endblock %}
 {% block content %}
-	<dl>
-		<dt>Name</dt>
-		<dd>{{ owner.name }}</dd>
-		<dt>Rank</dt>
-		<dd>{{ owner.rank }}</dd>
-	</dl>
-	{% if user is not none and user.has_access_to(owner) %}
-		<ul class="property-select">
-			<li><a title="Settings" class="widget settings" href="{{ url_for("user.settings", owner=owner) }}">Settings</a></li>
-			<li><a title="Security" class="widget security" href="{{ url_for("user.security", owner=owner) }}">Security</a></li>
-			<li><a title="Delete" class="widget delete" href="{{ url_for("user.delete", owner=owner) }}">Delete</a></li>
-		</ul>
-	{% endif %}
-	{% if user is not none and user.rank >= model.Rank.ADMIN and users is defined and users is not none %}
-		<ul class="listing">
-			{% for u in users %}
-				{% if u != owner %}
-					<li class="entry">
-						<div class="entry-component">
-							<a class="access" href="{{ url_for("user.profile", owner=u) }}" }}>
-								<span class="username">{{ u.name }}</span>
-							</a>
-						</div>
-					</li>
-				{% endif %}
-			{% endfor %}
-		</ul>
-	{% endif %}
-	{% if user is not none and user.rank >= model.Rank.ADMIN %}
-		<form action="{{ url_for("user.register_trampoline") }}" method="POST">
-			<label for="name">Username</label>
-			<input type="text" id="name" name="name" placeholder="Username" required />
-
-			<label for="password">Password</label>
-			<input type="password" id="password" name="password" placeholder="Password" required />
-
-			<label for="rank">Rank</label>
-			<select id="rank" name="rank" required />
-				{% for r in model.Rank %}
-					{% if r < user.rank %}
-						<option value="{{ r.name }}">{{ r }}</option>
-					{% endif %}
-				{% endfor %}
-			</select>
-
-			<button type="submit" name="user">Create user</button>
-		</form>
-	{% endif %}
+  <h1>{{ owner.name }}</h1>
+  {% if user is not none and user.has_access_to(owner) %}
+    <nav class="locations">
+      <ul>
+        <li>
+          <a href="{{ url_for("storage.browse", owner=owner, visibility=model.Visibility.private) }}">Private</a>
+        </li>
+        <li>
+          <a href="{{ url_for("storage.browse", owner=owner, visibility=model.Visibility.public) }}">Public</a>
+        </li>
+      </ul>
+    </nav>
+    <nav class="user-settings">
+      <ul>
+        <li>
+          <a href="{{ url_for("user.identifier", owner=owner) }}">Identifier</a>
+        </li>
+        <li>
+          <a href="{{ url_for("user.name", owner=owner) }}">Name</a>
+        </li>
+        <li>
+          <a href="{{ url_for("user.password", owner=owner) }}">Password</a>
+        </li>
+        <li>
+          <a href="{{ url_for("user.delete", owner=owner) }}">Delete</a>
+        </li>
+        {% if user.rank > owner.rank and user.rank >= model.Rank.ADMIN %}
+          <li>
+            <a href="{{ url_for("user.rank", owner=owner) }}">Rank</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+  {% if user is not none and user.rank >= model.Rank.ADMIN and users is defined and users is not none %}
+    <h2>Other users</h2>
+    <ul class="user-listing">
+      {% for u in users %}
+        {% if u != owner %}
+          <li>
+            <a href="{{ url_for("user.profile", owner=u) }}" }}>{{ u.name }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+  {% if user is not none and user.rank >= model.Rank.ADMIN %}
+    <a href="{{ url_for("user.register") }}">Register a new user</a>
+  {% endif %}
 {% endblock %}

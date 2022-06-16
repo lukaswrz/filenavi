@@ -51,7 +51,7 @@ class Rank(OrderedEnum):
         raise ValueError
 
 
-class LinkConversion(Enum):
+class Identifier(Enum):
     NAME = 1
     ID = 2
 
@@ -70,19 +70,19 @@ class User(db.Model):
     name = db.Column(db.Text, unique=True, nullable=False)
     _password = db.Column(db.Text, unique=False, nullable=False)
     rank = db.Column(db.Enum(Rank), unique=False, nullable=False)
-    link_conversion = db.Column(db.Enum(LinkConversion), unique=False, nullable=False)
+    identifier = db.Column(db.Enum(Identifier), unique=False, nullable=False)
 
     def __init__(
         self,
         name: str,
         password: str,
         rank: Rank,
-        link_conversion: LinkConversion = LinkConversion.NAME,
+        identifier: Identifier = Identifier.NAME,
     ):
         self.name = name
         self.password = password
         self.rank = rank
-        self.link_conversion = link_conversion
+        self.identifier = identifier
 
     def verify(self, password: str) -> bool:
         return check_password_hash(self.password, password)

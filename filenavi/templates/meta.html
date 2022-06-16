@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		{% block head %}
-			<meta charset="utf-8" />
-			<title>{% block title %}{% endblock %} &mdash; filenavi</title>
-			<link href="{{ url_for("static", filename="style.css") }}" rel="stylesheet" />
-		{% endblock %}
-	</head>
-	<body>
-		{% block layout %}{% endblock %}
-	</body>
+  <head>
+    {% block head %}
+      <meta charset="utf-8" />
+      <title>{% block title %}{% endblock %} &mdash; filenavi</title>
+      <link href="{{ url_for("static", filename="style.css") }}" rel="stylesheet" />
+    {% endblock %}
+  </head>
+  <body>
+    {% block layout %}{% endblock %}
+  </body>
 </html>

@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block title %}Rank settings for {{ owner.name }}{% endblock %}
+{% block content %}
+  <h1>Rank</h1>
+  <form class="user-rank" action="{{ url_for("user.rank_handler", owner=owner) }}" method="POST">
+    <label for="rank">Rank</label>
+    <select id="rank" name="rank" required />
+      {% for r in model.Rank %}
+        {% if r < user.rank %}
+          <option value="{{ r.name }}" {% if r == owner.rank %}selected{% endif %}>{{ r }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+    <button type="submit">Save</button>
+  </form>
+{% endblock %}
