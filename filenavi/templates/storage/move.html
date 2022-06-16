@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Move {{ file.path.name }}{% endblock %}
+{% block content %}
+  <h1>Move {{ file.path.name }}</h1>
+  <form class="move-file" action="{{ url_for("storage.move_handler", visibility=visibility, owner=owner, path=file.path.relative_to(owner.home(visibility))) }}" method="POST">
+    <label for="path">Destination path</label>
+    <input id="path" type="text" name="path" placeholder="Destination path" value="{{ file.path.relative_to(owner.home(visibility)) }}" required />
+    <span class="labeled-checkbox">
+      <input id="replace" name="replace" type="checkbox" />
+      <label for="replace">Replace on path conflict</label>
+    </span>
+    <button type="submit">Move</button>
+  </form>
+{% endblock %}

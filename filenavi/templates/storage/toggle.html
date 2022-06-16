@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Toggle {{ file.path.name }}{% endblock %}
+{% block content %}
+  <h1>Toggle {{ file.path.name }}</h1>
+  <form class="toggle-file" action="{{ url_for("storage.toggle_handler", visibility=visibility, owner=owner, path=file.path.relative_to(owner.home(visibility))) }}" method="POST">
+    <label for="path">Destination path</label>
+    <input id="path" type="text" name="path" placeholder="Destination path" value="{{ file.path.relative_to(owner.home(visibility)) }}" required />
+    <span class="labeled-checkbox">
+      <input id="replace" name="replace" type="checkbox" />
+      <label for="replace">Replace on path conflict</label>
+    </span>
+    <button type="submit">{% if visibility == model.Visibility.public %}Revoke visibility{% elif visibility == model.Visibility.private %}Publish{% endif %}</button>
+  </form>
+{% endblock %}

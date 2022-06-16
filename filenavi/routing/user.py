@@ -7,7 +7,7 @@ from .error import AuthenticationFailure, MalformedRequest, Unauthorized
 bp = Blueprint("user", __name__)
 
 
-@bp.route("/<user_name:owner>/")
+@bp.route("/<user_name:owner>")
 def profile(owner):
     user = model.User.current()
 
@@ -16,9 +16,20 @@ def profile(owner):
     )
 
 
-@bp.route("/register/", methods=["POST"])
+@bp.route("/register")
 @require_authentication
-def register_trampoline():
+def register():
+    user = model.User.current()
+
+    if user.rank < model.Rank.ADMIN:
+        raise Unauthorized
+
+    return render_template("user/register.html", user=user, owner=user)
+
+
+@bp.route("/register", methods=["POST"])
+@require_authentication
+def register_handler():
     user = model.User.current()
 
     if user.rank < model.Rank.ADMIN:
@@ -49,20 +60,20 @@ def register_trampoline():
     return redirect(url_for(".profile", owner=new_user))
 
 
-@bp.route("/<user_name:owner>/settings/")
+@bp.route("/<user_name:owner>/identifier")
 @require_authentication
-def settings(owner):
+def identifier(owner):
     user = model.User.current()
 
     if not user.has_access_to(owner):
         raise Unauthorized
 
-    return render_template("user/settings.html", user=user, owner=owner)
+    return render_template("user/identifier.html", user=user, owner=owner)
 
 
-@bp.route("/<user_name:owner>/settings/", methods=["POST"])
+@bp.route("/<user_name:owner>/identifier", methods=["POST"])
 @require_authentication
-def settings_trampoline(owner):
+def identifier_handler(owner):
     user = model.User.current()
 
     if not user.has_access_to(owner):
@@ -74,41 +85,108 @@ def settings_trampoline(owner):
         if not user.verify(request.form["password"]):
             raise AuthenticationFailure
 
-    if "name" in request.form:
-        owner.name = request.form["name"]
-    if "link-conversion" in request.form:
-        if request.form["link-conversion"] not in [
-            lc.name for lc in model.LinkConversion
-        ]:
-            raise MalformedRequest
-        owner.link_conversion = model.LinkConversion[request.form["link-conversion"]]
-    if "rank" in request.form:
-        if user.rank <= owner.rank or user.rank <= model.Rank.ADMIN:
-            raise Unauthorized
-        if request.form["rank"] not in [r.name for r in model.Rank]:
-            raise MalformedRequest
-        new_rank = model.Rank[request.form["rank"]]
-        if new_rank >= user.rank:
-            raise Unauthorized
-        owner.rank = new_rank
+    if "identifier" not in request.form:
+        raise MalformedRequest
+
+    if request.form["identifier"] not in [
+        identifier.name for identifier in model.Identifier
+    ]:
+        raise MalformedRequest
+
+    owner.identifier = model.Identifier[request.form["identifier"]]
+
     model.db.session.commit()
     return redirect(url_for(".profile", owner=owner))
 
 
-@bp.route("/<user_name:owner>/security/")
+@bp.route("/<user_name:owner>/name")
 @require_authentication
-def security(owner):
+def name(owner):
     user = model.User.current()
 
     if not user.has_access_to(owner):
         raise Unauthorized
 
-    return render_template("user/security.html", user=user, owner=owner)
+    return render_template("user/name.html", user=user, owner=owner)
 
 
-@bp.route("/<user_name:owner>/security/", methods=["POST"])
+@bp.route("/<user_name:owner>/name", methods=["POST"])
 @require_authentication
-def security_trampoline(owner):
+def name_handler(owner):
+    user = model.User.current()
+
+    if not user.has_access_to(owner):
+        raise Unauthorized
+
+    if user == owner:
+        if "password" not in request.form:
+            raise AuthenticationFailure
+        if not user.verify(request.form["password"]):
+            raise AuthenticationFailure
+
+    if "name" not in request.form:
+        raise MalformedRequest
+
+    owner.name = request.form["name"]
+
+    model.db.session.commit()
+    return redirect(url_for(".profile", owner=owner))
+
+
+@bp.route("/<user_name:owner>/rank")
+@require_authentication
+def rank(owner):
+    user = model.User.current()
+
+    if user.rank <= owner.rank or user.rank < model.Rank.ADMIN:
+        raise Unauthorized
+
+    return render_template("user/rank.html", user=user, owner=owner)
+
+
+@bp.route("/<user_name:owner>/rank", methods=["POST"])
+@require_authentication
+def rank_handler(owner):
+    user = model.User.current()
+
+    if not user.has_access_to(owner):
+        raise Unauthorized
+
+    if "rank" not in request.form:
+        raise MalformedRequest
+
+    if user.rank <= owner.rank or user.rank <= model.Rank.ADMIN:
+        raise Unauthorized
+
+    if request.form["rank"] not in [r.name for r in model.Rank]:
+        raise MalformedRequest
+
+    new_rank = model.Rank[request.form["rank"]]
+
+    if new_rank >= user.rank:
+        raise Unauthorized
+
+    owner.rank = new_rank
+
+    model.db.session.commit()
+
+    return redirect(url_for(".profile", owner=owner))
+
+
+@bp.route("/<user_name:owner>/password")
+@require_authentication
+def password(owner):
+    user = model.User.current()
+
+    if not user.has_access_to(owner):
+        raise Unauthorized
+
+    return render_template("user/password.html", user=user, owner=owner)
+
+
+@bp.route("/<user_name:owner>/password", methods=["POST"])
+@require_authentication
+def password_handler(owner):
     user = model.User.current()
 
     if not user.has_access_to(owner):
@@ -131,7 +209,7 @@ def security_trampoline(owner):
     return redirect(url_for(".profile", owner=owner))
 
 
-@bp.route("/<user_name:owner>/delete/")
+@bp.route("/<user_name:owner>/delete")
 @require_authentication
 def delete(owner):
     user = model.User.current()
@@ -142,9 +220,9 @@ def delete(owner):
     return render_template("user/delete.html", user=user, owner=owner)
 
 
-@bp.route("/<user_name:owner>/delete/", methods=["POST"])
+@bp.route("/<user_name:owner>/delete", methods=["POST"])
 @require_authentication
-def delete_trampoline(owner):
+def delete_handler(owner):
     user = model.User.current()
 
     if not user.has_access_to(owner):
@@ -152,6 +230,12 @@ def delete_trampoline(owner):
 
     if "name" not in request.form:
         raise MalformedRequest
+
+    if user == owner:
+        if "password" not in request.form:
+            raise AuthenticationFailure
+        if not user.verify(request.form["password"]):
+            raise AuthenticationFailure
 
     if request.form["name"] != owner.name:
         flash("Usernames do not match", "error")

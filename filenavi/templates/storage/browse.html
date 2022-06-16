@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block title %}Files from {{ owner.name }}{% endblock %}
+{% block head %}
+  {{ super() }}
+  <script src="{{ url_for("static", filename="upload.js") }}"></script>
+{% endblock %}
+{% block content %}
+  <h1>{% if visibility == model.Visibility.public %}Public{% endif %}{% if visibility == model.Visibility.private %}Private{% endif %}</h1>
+  {% if files is defined %}
+    <a
+      class="up"
+      {% if parent is defined and parent is not none %}
+        {% if user.identifier == model.Identifier.ID %}
+          href="{{ url_for("storage.browse_id", visibility=visibility, owner=owner, path=parent.path.relative_to(owner.home(parent.visibility))) + "/" }}" }}
+        {% endif %}
+        {% if user.identifier == model.Identifier.NAME %}
+          href="{{ url_for("storage.browse", visibility=visibility, owner=owner, path=parent.path.relative_to(owner.home(parent.visibility))) + "/" }}" }}
+        {% endif %}
+      {% endif %}
+    >
+      Up
+    </a>
+    <ul class="file-listing">
+      {% for f in files %}
+        {% set tail = "/" if f.path.is_dir() and not (f.path|string).endswith("/") else "" %}
+        {% set fmtname = f.path.name + tail %}
+        <li>
+          <div class="entry-content">
+            <a
+              {% if user.identifier == model.Identifier.ID %}
+                href="{{ url_for("storage.browse_id", visibility=visibility, owner=owner, path=f.path.relative_to(owner.home(f.visibility))) + tail }}" }}
+              {% endif %}
+              {% if user.identifier == model.Identifier.NAME %}
+                href="{{ url_for("storage.browse", visibility=visibility, owner=owner, path=f.path.relative_to(owner.home(f.visibility))) + tail }}" }}
+              {% endif %}
+            >
+              {{ fmtname }}
+            </a>
+            <details class="attributes">
+              <summary>Attributes</summary>
+              <dl>
+                <dt>Modification</dt>
+                <dd>{{ f.attributes["modification"].strftime("%B %d, %Y") }}</dd>
+                <dt>Symlink</dt>
+                <dd>{% if f.attributes["symlink"] %}Yes{% else %}No{% endif %}</dd>
+                <dt>Size</dt>
+                <dd>{{ model.File.format_size(f.attributes["size"]) }}</dd>
+              </dl>
+            </details>
+          </div>
+          <nav class="file-settings">
+            <ul>
+              <li>
+                <a href="{{ url_for("storage.move", owner=owner, visibility=visibility, path=f.path.relative_to(owner.home(f.visibility))) }}">Move</a>
+              </li>
+              <li>
+                <a href="{{ url_for("storage.toggle", owner=owner, visibility=visibility, path=f.path.relative_to(owner.home(f.visibility))) }}">Toggle</a>
+              </li>
+              <li>
+                <a href="{{ url_for("storage.remove", owner=owner, visibility=visibility, path=f.path.relative_to(owner.home(f.visibility))) }}">Remove</a>
+              </li>
+            </ul>
+          </nav>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <form class="upload-files" action="{{ url_for("storage.browse_handler", visibility=visibility, owner=owner, path=current) }}" method="POST" enctype="multipart/form-data">
+    <label for="files">Files</label>
+    <input id="files" type="file" name="files" multiple onchange="form.submit()" required />
+    <button type="submit">Upload</button>
+  </form>
+  <form class="create-directory" action="{{ url_for("storage.browse_handler", visibility=visibility, owner=owner, path=current) }}" method="POST">
+    <button type="submit">Create</button>
+    <label for="directory">Directory</label>
+    <input id="directory" type="text" name="directory" placeholder="Directory" required />
+  </form>
+{% endblock %}

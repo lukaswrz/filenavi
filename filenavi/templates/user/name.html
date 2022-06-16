@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Username settings for {{ owner.name }}{% endblock %}
+{% block content %}
+  <h1>Name</h1>
+  <form class="user-name" action="{{ url_for("user.name_handler", owner=owner) }}" method="POST">
+    <label for="name">Name</label>
+    <input id="name" type="text" name="name" placeholder="Username" value="{{ owner.name }}" required />
+    {% if user == owner %}
+      <label for="password">Password</label>
+      <input id="password" type="password" name="password" placeholder="Current password" required />
+    {% endif %}
+    <button type="submit">Save</button>
+  </form>
+{% endblock %}

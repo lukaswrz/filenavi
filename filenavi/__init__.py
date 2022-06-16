@@ -3,14 +3,11 @@ from pathlib import Path
 from urllib.parse import urlparse, urlunparse
 from configparser import ConfigParser
 
-from flask import Flask, session, flash, redirect, url_for, request
+from flask import Flask, flash, redirect, url_for, request
 from flask_session import Session
-from flask_sqlalchemy import SQLAlchemy
-from flask.cli import with_appcontext
 from humanfriendly import parse_size
 import click
 
-from . import model
 from .routing.conv import UserIdConverter, UserNameConverter, VisibilityConverter
 from .routing import site, user, storage
 from .routing.error import (
@@ -60,13 +57,10 @@ def create_app(test_config=None):
     app.register_blueprint(user.bp)
     app.register_blueprint(storage.bp)
 
-    # expand ~ and user ids to ~user
-    @app.route("/~/")
+    @app.route("/~")
     @app.route("/~/<path:path>")
-    @app.route("/id/~/")
-    @app.route("/id/~/<path:path>")
-    @app.route("/id/<user_id:owner>/")
-    @app.route("/id/<user_id:owner>/<path:path>")
+    @app.route("/<user_id:owner>/")
+    @app.route("/<user_id:owner>/<path:path>")
     def expand(owner=None, path=""):
         if owner is not None:
             new_path = f"/~{owner.name}/{path}"
@@ -86,7 +80,9 @@ def create_app(test_config=None):
         user = model.User.current()
         if user is not None:
             return redirect(
-                url_for("storage.main", owner=user, visibility=model.Visibility.private)
+                url_for(
+                    "storage.browse", owner=user, visibility=model.Visibility.private
+                )
             )
         else:
             return redirect(url_for("site.login"))

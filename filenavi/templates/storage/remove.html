@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block title %}Remove {{ file.path.name }}{% endblock %}
+{% block content %}
+  <h1>Remove {{ file.path.name }}</h1>
+  <form class="remove-file" action="{{ url_for("storage.remove_handler", visibility=visibility, owner=owner, path=file.path.relative_to(owner.home(visibility))) }}" method="POST">
+    <span class="labeled-checkbox">
+      <input id="recursive" name="recursive" type="checkbox" />
+      <label for="recursive">Remove recursively</label>
+    </span>
+    <button type="submit">Remove</button>
+  </form>
+{% endblock %}

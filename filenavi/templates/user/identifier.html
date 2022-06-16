@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block title %}Identifier settings for {{ owner.name }}{% endblock %}
+{% block content %}
+  <h1>Identifier</h1>
+  <form class="user-identifier" action="{{ url_for("user.identifier_handler", owner=owner) }}" method="POST">
+    <label for="identifier">Identifier</label>
+    <select id="identifier" name="identifier">
+      {% for i in model.Identifier %}
+        <option value="{{ i.name }}" {% if i == owner.identifier %}selected{% endif %}>{{ i }}</option>
+      {% endfor %}
+    </select>
+    {% if user == owner %}
+      <label for="password">Password</label>
+      <input id="password" type="password" name="password" placeholder="Password" required />
+    {% endif %}
+    <button type="submit">Save</button>
+  </form>
+{% endblock %}
