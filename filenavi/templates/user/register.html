@@ -9,7 +9,7 @@
     <label for="password">Password</label>
     <input id="password" type="password" name="password" placeholder="Password" required />
 
-    <label for="rank">Rank/label>
+    <label for="rank">Rank</label>
     <select id="rank" name="rank" required>
       {% for r in model.Rank %}
         {% if r < user.rank %}
