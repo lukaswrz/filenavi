@@ -81,7 +81,7 @@ def create_app(test_config=None):
         if user is not None:
             return redirect(
                 url_for(
-                    "storage.browse", owner=user, visibility=model.Visibility.private
+                    "storage.browse", owner=user, visibility=model.Visibility.PRIVATE
                 )
             )
         else:

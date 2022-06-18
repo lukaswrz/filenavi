@@ -9,6 +9,6 @@
       <input id="replace" name="replace" type="checkbox" />
       <label for="replace">Replace on path conflict</label>
     </span>
-    <button type="submit">{% if visibility == model.Visibility.public %}Revoke visibility{% elif visibility == model.Visibility.private %}Publish{% endif %}</button>
+    <button type="submit">{% if visibility == model.Visibility.PUBLIC %}Revoke visibility{% elif visibility == model.Visibility.PRIVATE %}Publish{% endif %}</button>
   </form>
 {% endblock %}

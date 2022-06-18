@@ -32,7 +32,7 @@ def browse(owner, visibility, path=None):
     path = (home / path) if path is not None else home
     target = model.File(path, owner, visibility)
 
-    if visibility == model.Visibility.private:
+    if visibility == model.Visibility.PRIVATE:
         if user is None:
             raise NotAuthenticated
         if not user.has_access_to(target):
