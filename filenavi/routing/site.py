@@ -12,7 +12,7 @@ def index():
     user = model.User.current()
     if user is not None:
         return redirect(
-            url_for("storage.browse", owner=user, visibility=model.Visibility.private)
+            url_for("storage.browse", owner=user, visibility=model.Visibility.PRIVATE)
         )
 
     return redirect(url_for(".login"))
@@ -41,7 +41,7 @@ def login_handler():
 
     session["user_id"] = user.id
     return redirect(
-        url_for("storage.browse", owner=user, visibility=model.Visibility.private)
+        url_for("storage.browse", owner=user, visibility=model.Visibility.PRIVATE)
     )
 
 

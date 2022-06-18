@@ -5,10 +5,10 @@
       <nav class="locations">
         <ul>
           <li>
-            <a href="{{ url_for("storage.browse", owner=user, visibility=model.Visibility.private) }}">Private</a>
+            <a href="{{ url_for("storage.browse", owner=user, visibility=model.Visibility.PRIVATE) }}">Private</a>
           </li>
           <li>
-            <a href="{{ url_for("storage.browse", owner=user, visibility=model.Visibility.public) }}">Public</a>
+            <a href="{{ url_for("storage.browse", owner=user, visibility=model.Visibility.PUBLIC) }}">Public</a>
           </li>
         </ul>
       </nav>

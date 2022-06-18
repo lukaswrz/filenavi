@@ -141,17 +141,23 @@ def delete_user_dir(mapper, connect, target):
 
 
 class Visibility(Enum):
-    public = 1
-    private = 2
+    PUBLIC = 1
+    PRIVATE = 2
 
     def __str__(self):
-        return self.name
+        match self:
+            case Visibility.PUBLIC:
+                return 'public'
+            case Visibility.PRIVATE:
+                return 'private'
+            case _:
+                raise ValueError
 
     def toggle(self):
-        if self == Visibility.public:
-            return Visibility.private
-        if self == Visibility.private:
-            return Visibility.public
+        if self == Visibility.PUBLIC:
+            return Visibility.PRIVATE
+        if self == Visibility.PRIVATE:
+            return Visibility.PUBLIC
 
 
 class Share(db.Model):
@@ -185,7 +191,7 @@ class Membership(db.Model):
 
 class File:
     def __init__(
-        self, path: Path, owner: User, visibility: Visibility = Visibility.private
+        self, path: Path, owner: User, visibility: Visibility = Visibility.PRIVATE
     ):
         self.path = owner.home(visibility, path)
         self.visibility = visibility
@@ -268,7 +274,7 @@ class File:
         self.visibility = new_visibility
 
     def is_accessible_by(self, user) -> bool:
-        public = self.visibility == Visibility.public and not self.path.is_dir()
+        public = self.visibility == Visibility.PUBLIC and not self.path.is_dir()
 
         if user is None:
             return public

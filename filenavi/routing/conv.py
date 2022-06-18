@@ -49,7 +49,9 @@ class UserNameConverter(BaseConverter):
 class VisibilityConverter(BaseConverter):
     def to_python(self, value):
         try:
-            return model.Visibility[value]
+            for visibility in model.Visibility:
+                if str(visibility) == value:
+                    return visibility
         except KeyError:
             raise ValidationError
 
