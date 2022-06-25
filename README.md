@@ -33,8 +33,8 @@ Next, the repository needs to be cloned. I will choose to clone it into
 
 ```bash
 mkdir --parents /usr/local/share/webapps/filenavi
-git clone https://github.com/lukaswrz/filenavi.git /usr/local/share/webapps/filenavi
-chown --recursive filenavi:filenavi /usr/local/share/webapps/filenavi
+chown filenavi:filenavi /usr/local/share/webapps/filenavi
+runuser -u filenavi -- git clone https://github.com/lukaswrz/filenavi.git /usr/local/share/webapps/filenavi
 ```
 
 Now, the dependencies have to be installed. Make sure that they are either
@@ -71,10 +71,8 @@ mkdir --parents /var/lib/filenavi/data
 Set the correct permissions:
 
 ```bash
-chmod --recursive 700 /usr/local/share/webapps/filenavi
-chmod --recursive 700 /var/lib/filenavi
-chmod --recursive 770 /var/lib/filenavi/data
-chown --recursive filenavi:filenavi /var/lib/filenavi
+chmod 700 /var/lib/filenavi /var/lib/filenavi/data
+chown filenavi:filenavi /var/lib/filenavi
 ```
 
 Now is a good time to [create the configuration file](#configuration), as the
