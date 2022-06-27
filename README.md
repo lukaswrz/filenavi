@@ -91,6 +91,7 @@ Install uWSGI for the reverse proxy (distribution-dependent):
 ```bash
 pacman -S uwsgi
 ```
+
 Create a uWSGI configuration file, e.g. as `/etc/uwsgi/filenavi.ini`:
 
 ```ini
@@ -159,8 +160,3 @@ systemctl start redis.service uwsgi@filenavi.service nginx.service
 Now, you can login as the user "filenavi" with the password "filenavi". It is
 of course highly recommended to change the username and password, as this user
 has the owner rank, which means that it can basically do anything.
-
-## Icons
-
-The UI icons are from [here](https://github.com/davidmerfield/Public-Icons), but
-have been altered.
