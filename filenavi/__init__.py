@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from urllib.parse import urlparse, urlunparse
 from configparser import ConfigParser
@@ -8,7 +7,7 @@ from flask_session import Session
 from humanfriendly import parse_size
 import click
 
-from .routing.conv import UserIdConverter, UserNameConverter, VisibilityConverter
+from .routing.conv import VisibilityConverter, UserConverter
 from .routing import site, user, storage
 from .routing.error import (
     Unauthorized,
@@ -49,8 +48,7 @@ def create_app(test_config=None):
         model.db.session.commit()
         click.echo("Initialized the database")
 
-    app.url_map.converters["user_id"] = UserIdConverter
-    app.url_map.converters["user_name"] = UserNameConverter
+    app.url_map.converters["user"] = UserConverter
     app.url_map.converters["visibility"] = VisibilityConverter
 
     app.register_blueprint(site.bp)
@@ -59,8 +57,8 @@ def create_app(test_config=None):
 
     @app.route("/~")
     @app.route("/~/<path:path>")
-    @app.route("/<user_id:owner>/")
-    @app.route("/<user_id:owner>/<path:path>")
+    @app.route("/<user(ID):owner>/")
+    @app.route("/<user(ID):owner>/<path:path>")
     def expand(owner=None, path=""):
         if owner is not None:
             new_path = f"/~{owner.name}/{path}"
