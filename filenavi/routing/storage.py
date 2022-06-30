@@ -17,14 +17,14 @@ INLINE_EXTENSIONS = ["txt", "pdf", "png", "jpg", "jpeg", "gif"]
 bp = Blueprint("storage", __name__)
 
 
-@bp.route("/<user_id:owner>/<visibility:visibility>/browse/")
-@bp.route("/<user_id:owner>/<visibility:visibility>/browse/<path:path>")
+@bp.route("/<user(ID):owner>/<visibility:visibility>/browse/")
+@bp.route("/<user(ID):owner>/<visibility:visibility>/browse/<path:path>")
 def browse_id(owner, visibility, path=None):
     return redirect(url_for(".browse", owner=owner, visibility=visibility, path=path))
 
 
-@bp.route("/<user_name:owner>/<visibility:visibility>/browse/")
-@bp.route("/<user_name:owner>/<visibility:visibility>/browse/<path:path>")
+@bp.route("/<user(NAME):owner>/<visibility:visibility>/browse/")
+@bp.route("/<user(NAME):owner>/<visibility:visibility>/browse/<path:path>")
 def browse(owner, visibility, path=None):
     user = model.User.current()
 
@@ -76,9 +76,9 @@ def browse(owner, visibility, path=None):
     )
 
 
-@bp.route("/<user_name:owner>/<visibility:visibility>/browse/", methods=["POST"])
+@bp.route("/<user(NAME):owner>/<visibility:visibility>/browse/", methods=["POST"])
 @bp.route(
-    "/<user_name:owner>/<visibility:visibility>/browse/<path:path>", methods=["POST"]
+    "/<user(NAME):owner>/<visibility:visibility>/browse/<path:path>", methods=["POST"]
 )
 @require_authentication
 def browse_handler(owner, visibility, path=None):
@@ -112,7 +112,7 @@ def browse_handler(owner, visibility, path=None):
     )
 
 
-@bp.route("/<user_name:owner>/<visibility:visibility>/move/<path:path>")
+@bp.route("/<user(NAME):owner>/<visibility:visibility>/move/<path:path>")
 @require_authentication
 def move(owner, visibility, path=None):
     user = model.User.current()
@@ -135,7 +135,7 @@ def move(owner, visibility, path=None):
 
 
 @bp.route(
-    "/<user_name:owner>/<visibility:visibility>/move/<path:path>",
+    "/<user(NAME):owner>/<visibility:visibility>/move/<path:path>",
     methods=["POST"],
 )
 @require_authentication
@@ -175,7 +175,7 @@ def move_handler(owner, visibility, path=None):
     return rv
 
 
-@bp.route("/<user_name:owner>/<visibility:visibility>/toggle/<path:path>")
+@bp.route("/<user(NAME):owner>/<visibility:visibility>/toggle/<path:path>")
 @require_authentication
 def toggle(owner, visibility, path=None):
     user = model.User.current()
@@ -198,7 +198,7 @@ def toggle(owner, visibility, path=None):
 
 
 @bp.route(
-    "/<user_name:owner>/<visibility:visibility>/toggle/<path:path>",
+    "/<user(NAME):owner>/<visibility:visibility>/toggle/<path:path>",
     methods=["POST"],
 )
 @require_authentication
@@ -237,7 +237,7 @@ def toggle_handler(owner, visibility, path=None):
     return rv
 
 
-@bp.route("/<user_name:owner>/<visibility:visibility>/remove/<path:path>")
+@bp.route("/<user(NAME):owner>/<visibility:visibility>/remove/<path:path>")
 @require_authentication
 def remove(owner, visibility, path=None):
     user = model.User.current()
@@ -260,7 +260,7 @@ def remove(owner, visibility, path=None):
 
 
 @bp.route(
-    "/<user_name:owner>/<visibility:visibility>/remove/<path:path>",
+    "/<user(NAME):owner>/<visibility:visibility>/remove/<path:path>",
     methods=["POST"],
 )
 @require_authentication

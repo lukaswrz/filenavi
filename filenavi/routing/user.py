@@ -7,7 +7,7 @@ from .error import AuthenticationFailure, MalformedRequest, Unauthorized
 bp = Blueprint("user", __name__)
 
 
-@bp.route("/<user_name:owner>")
+@bp.route("/<user(NAME):owner>")
 def profile(owner):
     user = model.User.current()
 
@@ -60,7 +60,7 @@ def register_handler():
     return redirect(url_for(".profile", owner=new_user))
 
 
-@bp.route("/<user_name:owner>/identifier")
+@bp.route("/<user(NAME):owner>/identifier")
 @require_authentication
 def identifier(owner):
     user = model.User.current()
@@ -71,7 +71,7 @@ def identifier(owner):
     return render_template("user/identifier.html", user=user, owner=owner)
 
 
-@bp.route("/<user_name:owner>/identifier", methods=["POST"])
+@bp.route("/<user(NAME):owner>/identifier", methods=["POST"])
 @require_authentication
 def identifier_handler(owner):
     user = model.User.current()
@@ -99,7 +99,7 @@ def identifier_handler(owner):
     return redirect(url_for(".profile", owner=owner))
 
 
-@bp.route("/<user_name:owner>/name")
+@bp.route("/<user(NAME):owner>/name")
 @require_authentication
 def name(owner):
     user = model.User.current()
@@ -110,7 +110,7 @@ def name(owner):
     return render_template("user/name.html", user=user, owner=owner)
 
 
-@bp.route("/<user_name:owner>/name", methods=["POST"])
+@bp.route("/<user(NAME):owner>/name", methods=["POST"])
 @require_authentication
 def name_handler(owner):
     user = model.User.current()
@@ -133,7 +133,7 @@ def name_handler(owner):
     return redirect(url_for(".profile", owner=owner))
 
 
-@bp.route("/<user_name:owner>/rank")
+@bp.route("/<user(NAME):owner>/rank")
 @require_authentication
 def rank(owner):
     user = model.User.current()
@@ -144,7 +144,7 @@ def rank(owner):
     return render_template("user/rank.html", user=user, owner=owner)
 
 
-@bp.route("/<user_name:owner>/rank", methods=["POST"])
+@bp.route("/<user(NAME):owner>/rank", methods=["POST"])
 @require_authentication
 def rank_handler(owner):
     user = model.User.current()
@@ -173,7 +173,7 @@ def rank_handler(owner):
     return redirect(url_for(".profile", owner=owner))
 
 
-@bp.route("/<user_name:owner>/password")
+@bp.route("/<user(NAME):owner>/password")
 @require_authentication
 def password(owner):
     user = model.User.current()
@@ -184,7 +184,7 @@ def password(owner):
     return render_template("user/password.html", user=user, owner=owner)
 
 
-@bp.route("/<user_name:owner>/password", methods=["POST"])
+@bp.route("/<user(NAME):owner>/password", methods=["POST"])
 @require_authentication
 def password_handler(owner):
     user = model.User.current()
@@ -209,7 +209,7 @@ def password_handler(owner):
     return redirect(url_for(".profile", owner=owner))
 
 
-@bp.route("/<user_name:owner>/delete")
+@bp.route("/<user(NAME):owner>/delete")
 @require_authentication
 def delete(owner):
     user = model.User.current()
@@ -220,7 +220,7 @@ def delete(owner):
     return render_template("user/delete.html", user=user, owner=owner)
 
 
-@bp.route("/<user_name:owner>/delete", methods=["POST"])
+@bp.route("/<user(NAME):owner>/delete", methods=["POST"])
 @require_authentication
 def delete_handler(owner):
     user = model.User.current()

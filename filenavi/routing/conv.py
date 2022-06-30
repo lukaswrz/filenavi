@@ -1,22 +1,36 @@
 from werkzeug.routing import BaseConverter, ValidationError
-from sqlalchemy.exc import NoResultFound
 from urllib.parse import quote
+from sqlalchemy.exc import NoResultFound
 
-from filenavi import model
+from filenavi.model import Visibility, Identifier, User
 
 
-class UserIdConverter(BaseConverter):
-    prefix = "#"
+class UserConverter(BaseConverter):
+    def __init__(
+        self,
+        map: "Map",
+        identifier: str
+    ) -> None:
+        super().__init__(map)
+        self.identifier = Identifier[identifier]
+        self.prefixes: dict[Identifier, str] = {
+            Identifier.ID: '#',
+            Identifier.NAME: '~'
+        }
 
-    def to_python(self, value):
-        if value.startswith(self.prefix):
+    def to_python(self, value: str) -> User:
+        if value.startswith(self.prefixes[self.identifier]):
             try:
-                rv = int(value[len(self.prefix) :])
-            except ValueError:
-                raise ValidationError
+                match self.identifier:
+                    case Identifier.ID:
+                        try:
+                            id = int(value[len(self.prefixes[self.identifier]): ])
+                        except ValueError:
+                            raise ValidationError
 
-            try:
-                user = model.User.query.filter_by(id=rv).one()
+                        user = User.query.filter_by(id=id).one()
+                    case Identifier.NAME:
+                        user = User.query.filter_by(name=value[len(self.prefixes[self.identifier]) :]).one()
             except NoResultFound:
                 raise ValidationError
 
@@ -25,31 +39,12 @@ class UserIdConverter(BaseConverter):
         raise ValidationError
 
     def to_url(self, value):
-        return quote(f"{self.prefix}{value.id}")
-
-
-class UserNameConverter(BaseConverter):
-    prefix = "~"
-
-    def to_python(self, value):
-        if value.startswith(self.prefix):
-            try:
-                user = model.User.query.filter_by(name=value[len(self.prefix) :]).one()
-            except NoResultFound:
-                raise ValidationError
-
-            return user
-
-        raise ValidationError
-
-    def to_url(self, value):
-        return quote(f"{self.prefix}{value.name}")
-
+        return quote(f"{self.prefixes[self.identifier]}{value.name}")
 
 class VisibilityConverter(BaseConverter):
     def to_python(self, value):
         try:
-            for visibility in model.Visibility:
+            for visibility in Visibility:
                 if str(visibility) == value:
                     return visibility
         except KeyError:
