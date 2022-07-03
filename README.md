@@ -130,24 +130,24 @@ especially important here):
 
 ```nginx
 server {
-	# Replace this with your domain name.
-	server_name example.com;
+    # Replace this with your domain name.
+    server_name example.com;
 
     location / {
-         proxy_pass http://localhost:6670;
-         proxy_set_header Host $host;
-         proxy_set_header X-Real-IP $remote_addr;
-         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_pass http://localhost:6670;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-	sendfile on;
+    sendfile on;
 
-	# This is the request upload limit, adjust it according to your needs.
-	client_max_body_size 32G;
+    # This is the request upload limit, adjust it according to your needs.
+    client_max_body_size 32G;
 
-	# Put your TLS configuration here instead.
-	listen 80;
+    # Put your TLS configuration here instead.
+    listen 80;
 }
 ```
 
