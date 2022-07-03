@@ -86,10 +86,10 @@ runuser -u filenavi -- env FLASK_APP=filenavi FLASK_ENV=development venv/bin/fla
 popd
 ```
 
-Install uWSGI for the reverse proxy (distribution-dependent):
+Install uWSGI and the uWSGI Python plugin (distribution-dependent):
 
 ```bash
-pacman -S uwsgi
+pacman -S uwsgi uwsgi-plugin-python
 ```
 
 Create a uWSGI configuration file, e.g. as `/etc/uwsgi/filenavi.ini`:
