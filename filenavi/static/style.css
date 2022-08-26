@@ -417,7 +417,7 @@ form.upload-files > button[type="submit"] {
   margin-bottom: 20px;
 }
 
-form.move-file, form.toggle-file, form.remove-file, form.delete-user, form.user-identifier, form.user-name, form.user-password, form.user-rank, form.user-register {
+form.move-file, form.toggle-file, form.remove-file, form.delete-user, form.user-name, form.user-password, form.user-rank, form.user-register {
   display: flex;
   flex-direction: column;
   gap: 10px;

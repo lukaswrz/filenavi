@@ -55,23 +55,6 @@ def create_app(test_config=None):
     app.register_blueprint(user.bp)
     app.register_blueprint(storage.bp)
 
-    @app.route("/~")
-    @app.route("/~/<path:path>")
-    @app.route("/<user(ID):owner>/")
-    @app.route("/<user(ID):owner>/<path:path>")
-    def expand(owner=None, path=""):
-        if owner is not None:
-            new_path = f"/~{owner.name}/{path}"
-        else:
-            user = model.User.current()
-            if user is None:
-                raise NotAuthenticated
-            new_path = f"/~{user.name}/{path}"
-
-        current_url = urlparse(request.url)
-        new_url = urlunparse(current_url._replace(path=new_path))
-        return redirect(new_url)
-
     def handle_error(error):
         flash(error.message, "error")
 

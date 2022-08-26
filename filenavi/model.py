@@ -51,18 +51,6 @@ class Rank(OrderedEnum):
         raise ValueError
 
 
-class Identifier(Enum):
-    NAME = 1
-    ID = 2
-
-    def __str__(self):
-        if self == self.ID:
-            return "ID"
-        if self == self.NAME:
-            return "Name"
-        raise ValueError
-
-
 class User(db.Model):
     __tablename__ = "users"
 
@@ -70,19 +58,16 @@ class User(db.Model):
     name = db.Column(db.Text, unique=True, nullable=False)
     _password = db.Column(db.Text, unique=False, nullable=False)
     rank = db.Column(db.Enum(Rank), unique=False, nullable=False)
-    identifier = db.Column(db.Enum(Identifier), unique=False, nullable=False)
 
     def __init__(
         self,
         name: str,
         password: str,
         rank: Rank,
-        identifier: Identifier = Identifier.NAME,
     ):
         self.name = name
         self.password = password
         self.rank = rank
-        self.identifier = identifier
 
     def verify(self, password: str) -> bool:
         return check_password_hash(self.password, password)

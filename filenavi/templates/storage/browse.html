@@ -10,12 +10,7 @@
     <a
       class="up"
       {% if parent is defined and parent is not none %}
-        {% if user.identifier == model.Identifier.ID %}
-          href="{{ url_for("storage.browse_id", visibility=visibility, owner=owner, path=parent.path.relative_to(owner.home(parent.visibility))) + "/" }}" }}
-        {% endif %}
-        {% if user.identifier == model.Identifier.NAME %}
-          href="{{ url_for("storage.browse", visibility=visibility, owner=owner, path=parent.path.relative_to(owner.home(parent.visibility))) + "/" }}" }}
-        {% endif %}
+        href="{{ url_for("storage.browse", visibility=visibility, owner=owner, path=parent.path.relative_to(owner.home(parent.visibility))) + "/" }}" }}
       {% endif %}
     >
       Up
@@ -27,12 +22,7 @@
         <li>
           <div class="entry-content">
             <a
-              {% if user.identifier == model.Identifier.ID %}
-                href="{{ url_for("storage.browse_id", visibility=visibility, owner=owner, path=f.path.relative_to(owner.home(f.visibility))) + tail }}" }}
-              {% endif %}
-              {% if user.identifier == model.Identifier.NAME %}
-                href="{{ url_for("storage.browse", visibility=visibility, owner=owner, path=f.path.relative_to(owner.home(f.visibility))) + tail }}" }}
-              {% endif %}
+              href="{{ url_for("storage.browse", visibility=visibility, owner=owner, path=f.path.relative_to(owner.home(f.visibility))) + tail }}" }}
             >
               {{ fmtname }}
             </a>
