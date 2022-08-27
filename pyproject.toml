@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "filenavi"
+version = "0.1.0"
+description = "A simple web-based interface to manage and publish/embed files."
+readme = "README.md"
+authors = [
+    "Lukas Wurzinger <lukas@wrz.one>"
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+
+async-timeout = "^4.0"
+cachelib = "^0.6"
+click = "^8.1"
+Deprecated = "^1.2"
+Flask = "^2.1"
+Flask-Session = "^0.4"
+Flask-SQLAlchemy = "^2.5"
+greenlet = "^1.1"
+humanfriendly = "10.0"
+itsdangerous = "^2.1"
+Jinja2 = "^3.1"
+MarkupSafe = "^2.1"
+packaging = "21.3"
+pyparsing = "^3.0"
+redis = "^4.2"
+SQLAlchemy = "^1.4"
+Werkzeug = "^2.1"
+wrapt = "^1.14"
+
+[tool.poetry.urls]
+homepage = "https://github.com/lukaswrz/filenavi"
+documentation = "https://github.com/lukaswrz/filenavi"
+repository = "https://github.com/lukaswrz/filenavi"
